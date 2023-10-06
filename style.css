@@ -1,1 +1,73 @@
+html {
+  height: 100%;
+  width: 100%;
+}
 
+body {
+  background-color: #FFFFFF ;
+  color: #FFFFFF ;
+  font-size: 2vh ;
+}
+
+
+#header {
+  position: absolute;
+  top: 0;
+  background-image: linear-gradient(to bottom right, #301E67, #5B8FB9);
+  padding: 0px ;
+  height: auto;
+  width: 100%;
+  font-family: 'Times New Roman', Times, serif;
+  left: 0% ;
+}
+
+
+.modeLinks {
+  display: inline-block ;
+  border: 1px solid #FFFFFF ;
+  text-align: center ;
+  height: auto ;
+  width: auto ;
+  font-size: 3vh ;
+}
+
+h1 {
+  font-family: 'Times New Roman', Times, serif;
+  font-size: 3vh;
+  text-decoration: underline;
+  text-align: left;
+}
+
+h2 {
+  font-family: 'Times New Roman', Times, serif;
+  font-size: 3vh;
+  text-decoration: underline;
+  text-align: center;
+}
+
+h3 {
+  font-family: 'Times New Roman', Times, serif;
+  font-size: 25px;
+  text-decoration: underline;
+  text-align: center;
+}
+
+p {
+  font-size: 25px;
+  font-family: 'Times New Roman', Times, serif;
+  margin-left: 25px;
+
+}
+
+ul {
+  font-family: 'Times New Roman', Times, serif;
+
+  font-size: 25px;
+}
+
+img {
+  height: 8%;
+  width: 8%;
+  float: right;
+  outline: 1px solid #FFFFFF
+}
