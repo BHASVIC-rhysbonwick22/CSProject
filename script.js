@@ -37,7 +37,7 @@ function lineList () {
     if (length != 8) { // overflowcheck
       let newLine  = new line() ;
       list[length] = newLine ;
-      length++
+      length++ ;
     }
     else {
       window.alert("max number of lines reached: 8") ;
@@ -52,7 +52,7 @@ function lineList () {
       for (let i = index ; i < length-1 ; i++) {
         list[i] = list[i+1] ; //shifts all lines left 1 index that are after the deleted line
       }
-      length--
+      length-- ;
     }
     
     if (currentLine > index) { // since all lines after the deleted line get shifted left, if CurrentLine is one of theose lines then the index will be differrent
@@ -84,20 +84,19 @@ function line () {
   
   
   this.getColour = function() {
-    return colour
+    return colour ;
   }
   this.setColour = function() {
    
     // No.colours = max number of lines = 8 
-    let colours = ["#FFFFFF", ,"#0000FF", ,"#FF0000", ,"#008000", ,"#FFFF00", "#FFC0CB","#800080","#FFA500"] ; //cycle: white blue red green yellow pink purple orange 
-    let newColourIndex = 0 ;
+    let colours = ["#FFFFFF","#0000FF", "#FF0000", "#008000", "#FFFF00", "#FFC0CB","#800080","#FFA500"] ; 
+    //cycle: white blue red green yellow pink purple orange 
     let x = 0 ;
-    while (colours[newColourIndex] != colours[x]) { // linear search
+    while (colours[x] != colour) { // linear search
       x++ ;
     }
-    newColourIndex ++ ;
-    if (newColourIndex != colours.length) {
-      colour = colours[newColourIndex] ;
+    if (x+1 != colours.length) {
+      colour = colours[x+1] ;
     }
     else {
       colour = colours[0] ;
@@ -113,7 +112,7 @@ function line () {
     return isGradientGraphed ;
   }
    this.setGradientGraph = function() {
-    isGraidentGraphed = !isGradientGraphed ;
+    isGradientGraphed = !isGradientGraphed ;
   }
   this.getEquation = function() {
     return equation ;
@@ -122,7 +121,10 @@ function line () {
 
 
 function stage1Testing () {
-  const testLineList = new lineList() 
+  
+  
+  // each test should be run seperate from eachother and each test should use the testLineList and their contents if needed
+  const testLineList = new lineList() ;
   testLineList.addLine() ; // each line gets it's lineEquation stored in the attribute "equation" when instantiated
   testLineList.addLine() ;
   testLineList.addLine() ;
@@ -131,29 +133,37 @@ function stage1Testing () {
   testLineList.addLine() ;
   testLineList.addLine() ;
   testLineList.addLine() ;
-  const testLine1 = testLineList.getLine() // line in index 0
-  const testEquation1 = testLine1.getEquation() // equation of line in index 0
-
+  const testLine1 = testLineList.getLine() ; // line in index 0
+  const testEquation1 = testLine1.getEquation() ; // equation of line in index 0
+  
   //test 1
   testLineList.addLine() ; // hopefully not allowed since max No. of lines is 8
+  //works
 
   //test2 
+  console.log(testLine1.getColour()) ; // colours[0] == "#FFFFFF" - default 
+  testLine1.setColour()
+  console.log(testLine1.getColour()) ; // colours[1] == "#FFFF00"
+  for (let i = 1 ; i <= 7 ; i++){
+    testLine1.setColour() ;
+  }
   console.log(testLine1.getColour()) ;
-  console.log(testLine1.setColour()) ;
-  console.log(testLine1.getColour()) ;
-
+  //works apart from syntax error in array (accidentally too many commas from copy paste)
 
   //test3 
-  console.log(testLine1.getGraph()) ;
-  console.log(testLine1.setGraph()) ;
-  console.log(testLine1.getGraph()) ;
+  console.log(testLine1.getGraph()) ; // false - default 
+  testLine1.setGraph() ;
+  console.log(testLine1.getGraph()) ; // true 
 
-  console.log(testLine1.getGradientGraph()) ;
-  console.log(testLine1.setGradientGraph()) ;
-  console.log(testLine1.getGradientGraph()) ;
-
+  console.log(testLine1.getGradientGraph()) ; // false - default
+  testLine1.setGradientGraph() ;
+  console.log(testLine1.getGradientGraph()) ; // true 
+  
+  // works - had a syntax error of misspelling gradient
+  // code was making a new variable rather than updating the existing attribute 
+  
   //test 4 and 5
-  //test 4 and 5 are ommitted since I chose to not use parameters and as shown in the second mistake outline in the iterative testing
+  //test 4 and 5 are ommitted since I chose to not use parameters and as shown in the second mistake outlined in the iterative testing
 
   //test 6
   testEquation1.push("a") ;
@@ -161,20 +171,22 @@ function stage1Testing () {
   testEquation1.push("c") ;
   testEquation1.push("d") ;
   testEquation1.push("e") ;
-  testEquation1.pop() ;
-  testEquation1.pop() ;
-  testEquation1.display() ;
-
+  testEquation1.pop() ; // d
+  testEquation1.pop() ; // e
+  testEquation1.display() ; // ["a" ,"b" , "c"]
+  
+  // works perfect - correct values are popped and correct values are displayed in the correct order! 
+  
   //test 7 
   testEquation1.pop() ;
-  for (let i = 0 ; i<= 100 ; i++) {
-       testEquation1.push(i.toString()) ;
-  }
-  
-
+  for (let i = 0 ; i<= 20 ; i++) {
+       testEquation1.push(i.toString()) ; // 0,1,2,3...19 and then 20 is ignored due to overflow 
+  } 
+  testEquation1.display() ;
+  // works - underflow is prevented and all pushes are made except the last one which would cause an overflow
 }
-//testLineList.display() ;
+
 
   //testEquation.display() ;
   //console.log(testEquation.top) ;
-stage1Testing() ;
+//stage1Testing() ;
