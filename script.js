@@ -102,6 +102,7 @@ function line () {
       colour = colours[0] ;
     }
   }
+  
   this.getGraph = function() {
     return isGraphed ;
   }
@@ -121,9 +122,8 @@ function line () {
 
 
 function stage1Testing () {
-  
-  
   // each test should be run seperate from eachother and each test should use the testLineList and their contents if needed
+  
   const testLineList = new lineList() ;
   testLineList.addLine() ; // each line gets it's lineEquation stored in the attribute "equation" when instantiated
   testLineList.addLine() ;
@@ -138,7 +138,7 @@ function stage1Testing () {
   
   //test 1
   testLineList.addLine() ; // hopefully not allowed since max No. of lines is 8
-  //works
+  //works - alert is shown 
 
   //test2 
   console.log(testLine1.getColour()) ; // colours[0] == "#FFFFFF" - default 
@@ -149,7 +149,7 @@ function stage1Testing () {
   }
   console.log(testLine1.getColour()) ;
   //works apart from syntax error in array (accidentally too many commas from copy paste)
-
+  
   //test3 
   console.log(testLine1.getGraph()) ; // false - default 
   testLine1.setGraph() ;
@@ -158,11 +158,9 @@ function stage1Testing () {
   console.log(testLine1.getGradientGraph()) ; // false - default
   testLine1.setGradientGraph() ;
   console.log(testLine1.getGradientGraph()) ; // true 
-  
   // works - had a syntax error of misspelling gradient
   // code was making a new variable rather than updating the existing attribute 
   
-  //test 4 and 5
   //test 4 and 5 are ommitted since I chose to not use parameters and as shown in the second mistake outlined in the iterative testing
 
   //test 6
@@ -174,7 +172,6 @@ function stage1Testing () {
   testEquation1.pop() ; // d
   testEquation1.pop() ; // e
   testEquation1.display() ; // ["a" ,"b" , "c"]
-  
   // works perfect - correct values are popped and correct values are displayed in the correct order! 
   
   //test 7 
@@ -184,9 +181,6 @@ function stage1Testing () {
   } 
   testEquation1.display() ;
   // works - underflow is prevented and all pushes are made except the last one which would cause an overflow
+   
 }
-
-
-  //testEquation.display() ;
-  //console.log(testEquation.top) ;
-//stage1Testing() ;
+stage1Testing() ;
