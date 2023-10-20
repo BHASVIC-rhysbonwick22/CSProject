@@ -71,3 +71,48 @@ img {
   float: right;
   outline: 1px solid #FFFFFF
 }
+
+table {
+  font-family: 'Times New Roman', Times, serif;
+  font-size: 25px;
+}
+td{
+  font-size: 5% ;
+  background-color: #606060 ;
+  border: 1px solid #FFFFFF ;
+}
+tr {
+  border: 1px solid #FFFFFF ;
+  background-color: #5555CC ;
+}
+#AllInputButtons {
+  position: absolute ;
+  background-color: #394867 ;
+  top: 60%;
+  height: auto ;
+  width: auto ;
+  font-family: 'Times New Roman', Times, serif ;
+  border: 5px solid #FFFFFF ;
+  left: 7.5% ;
+  display:block ;
+}
+#constantsTable {
+  display: none ;
+}
+#trigonometryTable {
+  display: none ;
+}
+
+.inputTable {
+  margin: 0  auto ;
+}
+
+.cyclebutton {
+  width: auto ;
+  height: auto ;
+}
+.inputButton {
+  font-size: 2vw ;
+  width: 100% ;
+  height: auto ;
+}

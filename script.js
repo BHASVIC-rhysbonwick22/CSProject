@@ -119,11 +119,9 @@ function line () {
     return equation ;
   }
 }
-
-
 function stage1Testing () {
   // each test should be run seperate from eachother and each test should use the testLineList and their contents if needed
-  
+
   const testLineList = new lineList() ;
   testLineList.addLine() ; // each line gets it's lineEquation stored in the attribute "equation" when instantiated
   testLineList.addLine() ;
@@ -135,7 +133,7 @@ function stage1Testing () {
   testLineList.addLine() ;
   const testLine1 = testLineList.getLine() ; // line in index 0
   const testEquation1 = testLine1.getEquation() ; // equation of line in index 0
-  
+
   //test 1
   testLineList.addLine() ; // hopefully not allowed since max No. of lines is 8
   //works - alert is shown 
@@ -149,7 +147,7 @@ function stage1Testing () {
   }
   console.log(testLine1.getColour()) ;
   //works apart from syntax error in array (accidentally too many commas from copy paste)
-  
+
   //test3 
   console.log(testLine1.getGraph()) ; // false - default 
   testLine1.setGraph() ;
@@ -160,7 +158,7 @@ function stage1Testing () {
   console.log(testLine1.getGradientGraph()) ; // true 
   // works - had a syntax error of misspelling gradient
   // code was making a new variable rather than updating the existing attribute 
-  
+
   //test 4 and 5 are ommitted since I chose to not use parameters and as shown in the second mistake outlined in the iterative testing
 
   //test 6
@@ -173,14 +171,44 @@ function stage1Testing () {
   testEquation1.pop() ; // e
   testEquation1.display() ; // ["a" ,"b" , "c"]
   // works perfect - correct values are popped and correct values are displayed in the correct order! 
-  
+
   //test 7 
-  testEquation1.pop() ;
+  /*testEquation1.pop() ;
   for (let i = 0 ; i<= 20 ; i++) {
        testEquation1.push(i.toString()) ; // 0,1,2,3...19 and then 20 is ignored due to overflow 
-  } 
+  */
+  //} 
   testEquation1.display() ;
   // works - underflow is prevented and all pushes are made except the last one which would cause an overflow
-   
+
 }
-stage1Testing() ;
+
+
+
+function cycle (e) {
+  const constantTable = document.getElementById("constantsTable") ;
+  const operandsTable = document.getElementById("operandsTable") ;
+  const operatorsTable = document.getElementById("operatorTable") ;
+  if (e.target.id == "constants") {
+      constantTable.style.display = "block" ;
+      operandsTable.style.display = "none" ;
+      operatorsTable.style.display = "none" ;
+  }
+  else if (e.target.id == "operands") {
+    operandsTable.style.display = "block" ;
+    constantTable.style.display = "none" ;
+    operatorsTable.style.display = "none" ;
+  }
+  else {
+    operatorsTable.style.display = "block" ;
+    constantTable.style.display = "none" ;
+    operandsTable.style.display = "none" ;
+    }
+}
+window.onload = jsOnload ;
+function jsOnload () {
+   const buttons = document.getElementsByClassName("cycleButton") ;
+  for (let i = 0 ; i < buttons.length ; i++) {
+      buttons[i].addEventListener("click" , cycle) ;
+  }  
+}
