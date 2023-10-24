@@ -186,21 +186,21 @@ function stage1Testing () {
 
 
 function cycle (e) {
-  const constantTable = document.getElementById("constantsTable") ;
-  const operandsTable = document.getElementById("operandsTable") ;
+  const constantTable = document.getElementById("constantTable") ;
+  const operandsTable = document.getElementById("operandTable") ;
   const operatorsTable = document.getElementById("operatorTable") ;
-  if (e.target.id == "constants") {
-      constantTable.style.display = "block" ;
+  if (e.target.id == "constant") {
+      constantTable.style.display = "table" ;
       operandsTable.style.display = "none" ;
       operatorsTable.style.display = "none" ;
   }
-  else if (e.target.id == "operands") {
-    operandsTable.style.display = "block" ;
+  else if (e.target.id == "operand") {
+    operandsTable.style.display = "table" ;
     constantTable.style.display = "none" ;
     operatorsTable.style.display = "none" ;
   }
-  else {
-    operatorsTable.style.display = "block" ;
+  else if (e.target.id =="operator") {
+    operatorsTable.style.display = "table" ; 
     constantTable.style.display = "none" ;
     operandsTable.style.display = "none" ;
     }

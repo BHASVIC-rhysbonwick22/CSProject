@@ -75,6 +75,8 @@ img {
 table {
   font-family: 'Times New Roman', Times, serif;
   font-size: 25px;
+  float: center ;
+  
 }
 td{
   font-size: 5% ;
@@ -86,25 +88,41 @@ tr {
   background-color: #5555CC ;
 }
 #AllInputButtons {
-  position: absolute ;
+  position: absolute;
   background-color: #394867 ;
   top: 60%;
   height: auto ;
   width: auto ;
   font-family: 'Times New Roman', Times, serif ;
-  border: 5px solid #FFFFFF ;
+  border: 1px solid #FFFFFF;
   left: 7.5% ;
   display:block ;
+
 }
-#constantsTable {
+
+#inputButtonWrapper {
+  border:1px solid #FFFFFF ;
+  height: 100% ; 
+  width: 100% ;
+} 
+#constantTable {
   display: none ;
+
 }
-#trigonometryTable {
-  display: none ;
+#operandTable {
+  display: none;
+}
+
+#operatorTable {
+  display: table ;
 }
 
 .inputTable {
-  margin: 0  auto ;
+  background-color: #212A3E ;
+  width: auto ;
+  margin-left: auto ;
+  margin-right: auto ;
+  
 }
 
 .cyclebutton {
@@ -115,4 +133,8 @@ tr {
   font-size: 2vw ;
   width: 100% ;
   height: auto ;
+}
+button:hover {
+  background-color: #AAAAAA ;
+  cursor: pointer ; 
 }
