@@ -75,7 +75,6 @@ img {
 table {
   font-family: 'Times New Roman', Times, serif;
   font-size: 25px;
-  float: center ;
   
 }
 td{
@@ -91,8 +90,8 @@ tr {
   position: absolute;
   background-color: #394867 ;
   top: 60%;
-  height: auto ;
-  width: auto ;
+  height: 30% ;
+  width: 40% ;
   font-family: 'Times New Roman', Times, serif ;
   border: 1px solid #FFFFFF;
   left: 7.5% ;
@@ -102,10 +101,12 @@ tr {
 
 #inputButtonWrapper {
   border:1px solid #FFFFFF ;
+  background-color: #394867 ;
   height: 100% ; 
   width: 100% ;
+  overflow: auto ;
 } 
-#constantTable {
+#binaryOperatorTable {
   display: none ;
 
 }
@@ -113,26 +114,24 @@ tr {
   display: none;
 }
 
-#operatorTable {
+#unaryOperatorTable {
   display: table ;
 }
 
 .inputTable {
-  background-color: #212A3E ;
   width: auto ;
   margin-left: auto ;
   margin-right: auto ;
-  
 }
-
 .cyclebutton {
+  font-size: 3vw ;
   width: auto ;
   height: auto ;
 }
 .inputButton {
-  font-size: 2vw ;
+  font-size: 1.5vw ;
+  height: 100% ;
   width: 100% ;
-  height: auto ;
 }
 button:hover {
   background-color: #AAAAAA ;

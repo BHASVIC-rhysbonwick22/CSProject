@@ -186,10 +186,10 @@ function stage1Testing () {
 
 
 function cycle (e) {
-  const constantTable = document.getElementById("constantTable") ;
+  const constantTable = document.getElementById("binaryOperatorTable") ;
   const operandsTable = document.getElementById("operandTable") ;
-  const operatorsTable = document.getElementById("operatorTable") ;
-  if (e.target.id == "constant") {
+  const operatorsTable = document.getElementById("unaryOperatorTable") ;
+  if (e.target.id == "binaryOperator") {
       constantTable.style.display = "table" ;
       operandsTable.style.display = "none" ;
       operatorsTable.style.display = "none" ;
@@ -199,7 +199,7 @@ function cycle (e) {
     constantTable.style.display = "none" ;
     operatorsTable.style.display = "none" ;
   }
-  else if (e.target.id =="operator") {
+  else if (e.target.id =="unaryOperator") {
     operatorsTable.style.display = "table" ; 
     constantTable.style.display = "none" ;
     operandsTable.style.display = "none" ;
