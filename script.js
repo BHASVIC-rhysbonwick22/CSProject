@@ -25,6 +25,19 @@ function lineEquation () {
       console.log(stack[i]) ;
     }
   } 
+  this.validate = function(inputBtnObj) {
+    console.log("validating...") ;
+    // follow flowchart 
+    //valifaet
+    //use the previous item in the stack 
+    //use the inputbutton nlist in line list
+    //add to stack if the item is valid
+    //update the display with the display
+    //create event listeners for all inoput buttons and make the specifc buttons differrent
+    //create the table tht the line is placved in and a change line number button XD
+    //stage 2 pretty much done
+    //finsih the mistakes on the documentation and add test table and results too
+  }
 }
  
 
@@ -32,6 +45,97 @@ function lineList () {
   var currentLine = 0 ; // index of currently selected line by user
   var list = [] ;
   var length = 0 ;
+  //stage 2 input buttons below
+  // operators - display,id/key,type
+  // operands - display,id/key,value
+  const numObj = new inputButtonOperand("0","num","0") // needs to be updated
+  numObj.setValue = function (inpValue) {
+    if (typeof(inpValue) != "number" && typeof(inpValue) != "float") {
+      window.alert("value must be a number or float") ;
+    }
+    else if (10**-6 > tinpValue || inpValue > 10**6) {
+      window.alert("value must be between 10^-6 and 10^6") ;
+    }
+    else {
+      this.value = inpValue ;
+      this.display = toString(inpvalue) ;
+    }
+  }
+
+  const logaObj = new inputButtonOperator("logₐ","lg","0") // needs to be updated
+  logaObj.setValue = function (inpValue) {
+    if (typeof(inpValue) != "number" && typeof(inpValue) != "float") {
+      window.alert("value must be a number or float") ;
+    }
+    else if (10**-2 > inpValue || inpValue > 10**6) {
+      window.alert("value must be between 10^-2 and 10^6") ;
+    }
+    else {
+      this.value = inpValue ;
+    }
+  }
+  
+  var inputButtonList = [ 
+    //unary
+    new inputButtonOperator("sin","sin","unary") ,
+    new inputButtonOperator("cos","cos","unary"),
+    new inputButtonOperator("tan","tan","unary"),
+    new inputButtonOperator("sec","sec","unary"),
+    new inputButtonOperator("cosec","csc","unary"),
+    new inputButtonOperator("cot","cot","unary"),
+    new inputButtonOperator("arctan","atan","unary"),
+    new inputButtonOperator("arcsin","asin","unary"),
+    new inputButtonOperator("arccos","acos","unary"),
+    new inputButtonOperator("arctan","atan","unary"),
+    new inputButtonOperator("arcsec","asec","unary"),
+    new inputButtonOperator("arccosec","acsc","unary"),
+    new inputButtonOperator("arccot","acot","unary"),
+    new inputButtonOperator("ln","le","unary"),
+    new inputButtonOperator("Modulus","m","unary"),
+    new inputButtonOperator("floor","f","unary"),
+    new inputButtonOperator("celing","c","unary"),
+    new inputButtonOperator("sinh","sinh","unary"),
+    new inputButtonOperator("cosh","cosh","unary"),
+    new inputButtonOperator("tanh","tanh","unary"),
+    new inputButtonOperator("sech","sech","unary"),
+    new inputButtonOperator("cosech","csch","unary"),
+    new inputButtonOperator("coth","coth","unary"),
+    new inputButtonOperator("arsinh","asinh","unary"),
+    new inputButtonOperator("arcosh","acosh","unary"),
+    new inputButtonOperator("artanh","atanh","unary"),
+    new inputButtonOperator("arsech","asech","unary"),
+    new inputButtonOperator("arcosech","acsch","unary"),
+    logaObj, // important changes needed 29 unary
+    //binary
+    new inputButtonOperator("x","*","binary") ,
+    new inputButtonOperator("+","+","binary") ,
+    new inputButtonOperator("-","-","binary") ,
+    new inputButtonOperator("/","/","binary") ,
+    new inputButtonOperator("^","^","binary") , // requires brackets after it to make sure user understands when the exponentaion ends
+    // if I have time, the document could change from superscript to subscript when this is entered but brackerts would still be required or something
+   //operands
+    new inputButtonOperand("π","p",toString(Math.PI)) ,
+    new inputButtonOperand("e","e",toString(Math.E)) ,
+    new inputButtonOperand("𝑥","x","x") ,
+    numObj // needs to be updated
+  ] ;
+  
+  this.getinputButton = function(id) {
+    let x = 0 ;
+    console.log(inputButtonList.length) ; 
+    while (id != inputButtonList[x].getId() && x < inputButtonList.length -1 ) {
+      console.log(x) ;
+      x++ ;
+    }
+    console.log(inputButtonList[x]) ;
+    if (id == inputButtonList[x].getId() ) {
+      return inputButtonList[x] ;
+    }
+    else {
+      console.log("not in list") ;
+      return -1 ;
+    }
+  }
   
   this.addLine = function () {
     if (length != 8) { // overflowcheck
@@ -182,33 +286,73 @@ function stage1Testing () {
   // works - underflow is prevented and all pushes are made except the last one which would cause an overflow
 
 }
+//stage 2
+
+function inputButtonPrototype() {
+  this.getId = function() {
+    return this.id ;
+  }
+  this.getDisplay = function() {
+    return this.display ;
+  }
+}
+function inputButtonOperator(inputDisplay,inputID,inputType) {
+  this.display =inputDisplay;
+  this.id = inputID;
+  var type = inputType;
+  //this.evaluate
+  this.getType = function() {
+    return type ;
+  }
+}
+function inputButtonOperand(inputDisplay,inputID,inputValue) {
+  this.display =inputDisplay;
+  this.id = inputID;
+  var value = inputValue ;
+  this.getValue = function() {
+    return value ;
+  }
+}
+Object.assign(inputButtonOperator.prototype, new inputButtonPrototype()) ;
+Object.assign(inputButtonOperand.prototype, new inputButtonPrototype()) ;
+const testbtn = new inputButtonOperator("*", "x","binary") ;
+console.log(testbtn.getId()) ;
+console.log(testbtn.getDisplay()) ;
+const testList = new lineList() ;
+const btn = testList.getinputButton("num") ;
+
+
+
 
 
 
 function cycle (e) {
-  const constantTable = document.getElementById("binaryOperatorTable") ;
+  const binaryTable = document.getElementById("binaryOperatorTable") ;
   const operandsTable = document.getElementById("operandTable") ;
-  const operatorsTable = document.getElementById("unaryOperatorTable") ;
+  const unaryTable = document.getElementById("unaryOperatorTable") ;
   if (e.target.id == "binaryOperator") {
-      constantTable.style.display = "table" ;
+      binaryTable.style.display = "table" ;
       operandsTable.style.display = "none" ;
-      operatorsTable.style.display = "none" ;
+      unaryTable.style.display = "none" ;
   }
   else if (e.target.id == "operand") {
     operandsTable.style.display = "table" ;
-    constantTable.style.display = "none" ;
-    operatorsTable.style.display = "none" ;
+    binaryTable.style.display = "none" ;
+    unaryTable.style.display = "none" ;
   }
   else if (e.target.id =="unaryOperator") {
-    operatorsTable.style.display = "table" ; 
-    constantTable.style.display = "none" ;
+    unaryTable.style.display = "table" ; 
+    binaryTable.style.display = "none" ;
     operandsTable.style.display = "none" ;
     }
 }
+
+
 window.onload = jsOnload ;
 function jsOnload () {
-   const buttons = document.getElementsByClassName("cycleButton") ;
-  for (let i = 0 ; i < buttons.length ; i++) {
-      buttons[i].addEventListener("click" , cycle) ;
+   const cycleButtons = document.getElementsByClassName("cycleButton") ;
+  for (let i =0 ; i < cycleButtons.length ; i++) {
+      cycleButtons[i].addEventListener("click" , cycle) ;
   }  
+  const lineist = new lineList() ;
 }
