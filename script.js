@@ -25,8 +25,97 @@ function lineEquation () {
       console.log(stack[i]) ;
     }
   } 
-  this.validate = function(inputBtnObj) {
+  this.validate = function(inputBtnObj) { //stage 2
     console.log("validating...") ;
+    var isValid  = false ;
+    var inpBtnId = inputBtnObj.getId() ;
+    const inputButtons = new inputButtonList() ;
+    var lastType = ""
+    console.log(top) ;
+    if (top != 0) {
+      var lastButtonObj = inputButtons.getInputButtonViaDisplay(stack[top])
+      var lastId = lastButtonObj.getId();
+      
+      if (lastButtonObj  instanceof inputButtonOperand) {
+        lastType = "operand" ;
+      }
+      else if ( lastId == "(") {
+        lastType == "(" ;
+      }
+        else if ( lastId == ")") {
+          lastType == ")" ;
+        }
+        
+      else if (lastButtonObj instanceof inputButtonOperator) {
+        lastType = "operator" ; // must be binary
+        // type for last item must be binary since the last item must be an open bracket if the item is unary operator
+      }
+    }
+    console.log(inpBtnId) ;
+    if (inpBtnId == "(" || top == 0){ //follow comments above for order
+       // open bracket validation
+      if (lastType != "operand") {
+        isValid = true ; 
+      } 
+      else {
+        window.alert("an open bracket can not be entered after an operand") ;
+      }
+    }  
+    else if (inpBtnId == ")") {
+      //closed bracket validation
+      if (lastType == "operand" && lastType != "(" && top != 0) {// top not working
+        isValid = true ; 
+      } 
+      else {
+        window.alert("a closed bracket can only be entered after an operand") ;
+      }
+    }
+     
+    else if (inputBtnObj instanceof inputButtonOperand) { 
+     // operand validation
+    // check for value and num ID
+      if (lastType == "operator" || lastType == "(" || top ==0) {
+        isValid = true ;
+      }
+      else {
+        window.alert("You can only enter an operand after an open bracket or operator or at the start") ;
+      }
+    }
+    
+    else if (inputBtnObj instanceof inputButtonOperator && inputBtnObj.getType() == "binary") {
+      if (lastType != "(" && top != 0) {
+        isValid = true ;
+      }
+      else {
+        window.alert("you cannot enter a binary operator after an open bracket or at the start")
+      }
+    }
+    else if (inputBtnObj instanceof inputButtonOperator && inputBtnObj.getType() == "unary") {
+      if (lastType != "operand" || top == 0 ) {
+        isValid = true ;
+      }
+      else {
+        window.alert("you cannot have a unary operator after an operand") ;
+      }
+    }
+      if (isValid == true) {
+        window.alert("valid") ;
+        this.push(inputBtnObj.getDisplay()) ; // doesn't work with the number object need to check if this is the last object or the one pressed when we add it to the list
+        if (inputBtnObj instanceof inputButtonOperator && inputBtnObj.getType() == "unary") {
+          this.push("(") ;
+        }
+      }
+      else {
+        window.alert("invalid") ;
+      }    
+    // check whether the last element was part of the opernad or operator class
+    // then if it is an operator run getType 
+    // display it using getDisplay
+    // then do validation for either opernad or operator
+    //if operand run validation on flowchart and use getvalue to dipslay it
+    // then consider special cases first and active their event listeners/valaditon for brackets and
+    //have bracklets be an operqator with type ( or ) and chcek for this in the code
+
     // follow flowchart 
     //valifaet
     //use the previous item in the stack 
@@ -45,97 +134,6 @@ function lineList () {
   var currentLine = 0 ; // index of currently selected line by user
   var list = [] ;
   var length = 0 ;
-  //stage 2 input buttons below
-  // operators - display,id/key,type
-  // operands - display,id/key,value
-  const numObj = new inputButtonOperand("0","num","0") // needs to be updated
-  numObj.setValue = function (inpValue) {
-    if (typeof(inpValue) != "number" && typeof(inpValue) != "float") {
-      window.alert("value must be a number or float") ;
-    }
-    else if (10**-6 > tinpValue || inpValue > 10**6) {
-      window.alert("value must be between 10^-6 and 10^6") ;
-    }
-    else {
-      this.value = inpValue ;
-      this.display = toString(inpvalue) ;
-    }
-  }
-
-  const logaObj = new inputButtonOperator("logₐ","lg","0") // needs to be updated
-  logaObj.setValue = function (inpValue) {
-    if (typeof(inpValue) != "number" && typeof(inpValue) != "float") {
-      window.alert("value must be a number or float") ;
-    }
-    else if (10**-2 > inpValue || inpValue > 10**6) {
-      window.alert("value must be between 10^-2 and 10^6") ;
-    }
-    else {
-      this.value = inpValue ;
-    }
-  }
-  
-  var inputButtonList = [ 
-    //unary
-    new inputButtonOperator("sin","sin","unary") ,
-    new inputButtonOperator("cos","cos","unary"),
-    new inputButtonOperator("tan","tan","unary"),
-    new inputButtonOperator("sec","sec","unary"),
-    new inputButtonOperator("cosec","csc","unary"),
-    new inputButtonOperator("cot","cot","unary"),
-    new inputButtonOperator("arctan","atan","unary"),
-    new inputButtonOperator("arcsin","asin","unary"),
-    new inputButtonOperator("arccos","acos","unary"),
-    new inputButtonOperator("arctan","atan","unary"),
-    new inputButtonOperator("arcsec","asec","unary"),
-    new inputButtonOperator("arccosec","acsc","unary"),
-    new inputButtonOperator("arccot","acot","unary"),
-    new inputButtonOperator("ln","le","unary"),
-    new inputButtonOperator("Modulus","m","unary"),
-    new inputButtonOperator("floor","f","unary"),
-    new inputButtonOperator("celing","c","unary"),
-    new inputButtonOperator("sinh","sinh","unary"),
-    new inputButtonOperator("cosh","cosh","unary"),
-    new inputButtonOperator("tanh","tanh","unary"),
-    new inputButtonOperator("sech","sech","unary"),
-    new inputButtonOperator("cosech","csch","unary"),
-    new inputButtonOperator("coth","coth","unary"),
-    new inputButtonOperator("arsinh","asinh","unary"),
-    new inputButtonOperator("arcosh","acosh","unary"),
-    new inputButtonOperator("artanh","atanh","unary"),
-    new inputButtonOperator("arsech","asech","unary"),
-    new inputButtonOperator("arcosech","acsch","unary"),
-    logaObj, // important changes needed 29 unary
-    //binary
-    new inputButtonOperator("x","*","binary") ,
-    new inputButtonOperator("+","+","binary") ,
-    new inputButtonOperator("-","-","binary") ,
-    new inputButtonOperator("/","/","binary") ,
-    new inputButtonOperator("^","^","binary") , // requires brackets after it to make sure user understands when the exponentaion ends
-    // if I have time, the document could change from superscript to subscript when this is entered but brackerts would still be required or something
-   //operands
-    new inputButtonOperand("π","p",toString(Math.PI)) ,
-    new inputButtonOperand("e","e",toString(Math.E)) ,
-    new inputButtonOperand("𝑥","x","x") ,
-    numObj // needs to be updated
-  ] ;
-  
-  this.getinputButton = function(id) {
-    let x = 0 ;
-    console.log(inputButtonList.length) ; 
-    while (id != inputButtonList[x].getId() && x < inputButtonList.length -1 ) {
-      console.log(x) ;
-      x++ ;
-    }
-    console.log(inputButtonList[x]) ;
-    if (id == inputButtonList[x].getId() ) {
-      return inputButtonList[x] ;
-    }
-    else {
-      console.log("not in list") ;
-      return -1 ;
-    }
-  }
   
   this.addLine = function () {
     if (length != 8) { // overflowcheck
@@ -313,16 +311,125 @@ function inputButtonOperand(inputDisplay,inputID,inputValue) {
     return value ;
   }
 }
+function inputButtonList() {
+  //stage 2 input buttons below
+  // operators - display,id/key,type
+  // operands - display,id/key,value
+  const numObj = new inputButtonOperand("0","num","0") // needs to be updated
+  numObj.setValue = function (inpValue) {
+    if (typeof(inpValue) != "number" && typeof(inpValue) != "float") {
+      window.alert("value must be a number or float") ;
+    }
+    else if (10**-6 > tinpValue || inpValue > 10**6) {
+      window.alert("value must be between 10^-6 and 10^6") ;
+    }
+    else {
+      this.value = inpValue ;
+      this.display = toString(inpvalue) ;
+    }
+  }
+
+  const logaObj = new inputButtonOperator("logₐ","lg","0") // needs to be updated
+  logaObj.setValue = function (inpValue) {
+    if (typeof(inpValue) != "number" && typeof(inpValue) != "float") {
+      window.alert("value must be a number or float") ;
+    }
+    else if (10**-2 > inpValue || inpValue > 10**6) {
+      window.alert("value must be between 10^-2 and 10^6") ;
+    }
+    else {
+      this.value = inpValue ;
+    }
+  }
+
+  var inputButtonList = [ 
+    //unary
+    new inputButtonOperator("(","(","unary") ,
+    new inputButtonOperator(")",")","unary") ,
+    new inputButtonOperator("sin","sin","unary") ,
+    new inputButtonOperator("cos","cos","unary"),
+    new inputButtonOperator("tan","tan","unary"),
+    new inputButtonOperator("sec","sec","unary"),
+    new inputButtonOperator("cosec","csc","unary"),
+    new inputButtonOperator("cot","cot","unary"),
+    new inputButtonOperator("arctan","atan","unary"),
+    new inputButtonOperator("arcsin","asin","unary"),
+    new inputButtonOperator("arccos","acos","unary"),
+    new inputButtonOperator("arctan","atan","unary"),
+    new inputButtonOperator("arcsec","asec","unary"),
+    new inputButtonOperator("arccosec","acsc","unary"),
+    new inputButtonOperator("arccot","acot","unary"),
+    new inputButtonOperator("ln","le","unary"),
+    new inputButtonOperator("Modulus","m","unary"),
+    new inputButtonOperator("floor","f","unary"),
+    new inputButtonOperator("celing","c","unary"),
+    new inputButtonOperator("sinh","sinh","unary"),
+    new inputButtonOperator("cosh","cosh","unary"),
+    new inputButtonOperator("tanh","tanh","unary"),
+    new inputButtonOperator("sech","sech","unary"),
+    new inputButtonOperator("cosech","csch","unary"),
+    new inputButtonOperator("coth","coth","unary"),
+    new inputButtonOperator("arsinh","asinh","unary"),
+    new inputButtonOperator("arcosh","acosh","unary"),
+    new inputButtonOperator("artanh","atanh","unary"),
+    new inputButtonOperator("arsech","asech","unary"),
+    new inputButtonOperator("arcosech","acsch","unary"),
+    logaObj, // important changes needed 29 unary
+    //binary
+    new inputButtonOperator("x","*","binary") ,
+    new inputButtonOperator("+","+","binary") ,
+    new inputButtonOperator("-","-","binary") ,
+    new inputButtonOperator("/","/","binary") ,
+    new inputButtonOperator("^","^","binary") , // requires brackets after it to make sure user understands when the exponentaion ends
+    // if I have time, the document could change from superscript to subscript when this is entered but brackerts would still be required or something
+   //operands
+    new inputButtonOperand("π","p",toString(Math.PI)) ,
+    new inputButtonOperand("e","e",toString(Math.E)) ,
+    new inputButtonOperand("𝑥","x","x") ,
+    numObj // needs to be updated
+  ] ;
+
+  this.getInputButtonViaId = function(id) {
+    let x = 0 ;
+    console.log(inputButtonList.length) ; 
+    while (id != inputButtonList[x].getId() && x < inputButtonList.length -1 ) {
+      console.log(x) ;
+      x++ ;
+    }
+    console.log(inputButtonList[x]) ;
+    if (id == inputButtonList[x].getId() ) {
+      return inputButtonList[x] ;
+    }
+    else {
+      console.log("not in list") ;
+      return -1 ;
+    }
+  }
+  this.getInputButtonViaDisplay = function(display) {
+    let x = 0 ;
+    console.log(inputButtonList.length) ; 
+    while (display != inputButtonList[x].getDisplay() && x < inputButtonList.length -1 ) {
+      console.log(x) ;
+      x++ ;
+    }
+    console.log(inputButtonList[x]) ;
+    if (display == inputButtonList[x].getId() ) {
+      return inputButtonList[x] ;
+    }
+    else {
+      console.log("not in list") ;
+      return -1 ;
+    }
+  }
+
+}
 Object.assign(inputButtonOperator.prototype, new inputButtonPrototype()) ;
 Object.assign(inputButtonOperand.prototype, new inputButtonPrototype()) ;
 const testbtn = new inputButtonOperator("*", "x","binary") ;
 console.log(testbtn.getId()) ;
 console.log(testbtn.getDisplay()) ;
-const testList = new lineList() ;
-const btn = testList.getinputButton("num") ;
-
-
-
+const testInputList = new inputButtonList() ;
+const btn = testInputList.getInputButtonViaId("num") ;
 
 
 
@@ -346,7 +453,11 @@ function cycle (e) {
     operandsTable.style.display = "none" ;
     }
 }
-
+function input (e) {
+  const inputButtons = new inputButtonList() ;
+  console.log(e.target.id) ;
+  lineist.validate(inputButtons.getInputButtonViaId(e.target.id)) ;
+}
 
 window.onload = jsOnload ;
 function jsOnload () {
@@ -354,5 +465,10 @@ function jsOnload () {
   for (let i =0 ; i < cycleButtons.length ; i++) {
       cycleButtons[i].addEventListener("click" , cycle) ;
   }  
-  const lineist = new lineList() ;
+  const inputButtons = document.getElementsByClassName("inputButton") ;
+  for (let i =0 ; i < inputButtons.length ; i++) {
+      inputButtons[i].addEventListener("click" , input) ;
+  }  
+  
 }
+var lineist = new lineEquation() ;
