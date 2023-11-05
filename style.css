@@ -98,7 +98,27 @@ tr {
   display:block ;
 
 }
+#linesWrapper {
+  position: absolute;
+  background-color: #394867 ;
+  top: 15%;
+  height: 30% ;
+  width: auto ;
+  font-family: 'Times New Roman', Times, serif ;
+  border: 1px solid #FFFFFF;
+  left: 7.5% ;
+  display:block ;
 
+}
+#lines {
+  width: auto ;
+  height: auto ;
+}
+.equation {
+  font-size: 3vw ;
+  width :auto ;
+  height: auto ;
+}
 #inputButtonWrapper {
   border:1px solid #FFFFFF ;
   background-color: #394867 ;

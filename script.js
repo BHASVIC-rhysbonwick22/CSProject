@@ -19,7 +19,8 @@ function lineEquation () {
     else {
       window.alert("underflow error")
     }
-  } 
+  }
+  
   this.display = function () { // only for testing
     for (let i = 0 ; i < top ; i++) {
       console.log(stack[i]) ;
@@ -30,28 +31,29 @@ function lineEquation () {
     var isValid  = false ;
     var inpBtnId = inputBtnObj.getId() ;
     const inputButtons = new inputButtonList() ;
-    var lastType = ""
-    console.log(top) ;
+    var lastType = "" ;
+    //console.log(top) ;
     if (top != 0) {
-      var lastButtonObj = inputButtons.getInputButtonViaDisplay(stack[top])
+      //console.log("stack[top]"+stack[top-1]) ;
+      var lastButtonObj = inputButtons.getInputButtonViaDisplay(stack[top-1])
       var lastId = lastButtonObj.getId();
-      
+      console.log(lastId) ;
       if (lastButtonObj  instanceof inputButtonOperand) {
         lastType = "operand" ;
       }
       else if ( lastId == "(") {
-        lastType == "(" ;
+        lastType = "(" ;
       }
         else if ( lastId == ")") {
-          lastType == ")" ;
+          lastType = ")" ;
         }
         
       else if (lastButtonObj instanceof inputButtonOperator) {
-        lastType = "operator" ; // must be binary
+        lastType = "operator" ; 
         // type for last item must be binary since the last item must be an open bracket if the item is unary operator
       }
     }
-    console.log(inpBtnId) ;
+    console.log("lastType:" + lastType) ;
     if (inpBtnId == "(" || top == 0){ //follow comments above for order
        // open bracket validation
       if (lastType != "operand") {
@@ -63,17 +65,29 @@ function lineEquation () {
     }  
     else if (inpBtnId == ")") {
       //closed bracket validation
-      if (lastType == "operand" && lastType != "(" && top != 0) {// top not working
+      let counter1 = 0 ;
+       let counter2 = 0 ;
+      for (let i = 0 ; i<= top ; i++) {
+        if ("(" == stack[i]) {
+          counter1++ ;
+        }
+        else if (")" == stack[i]) {
+          counter2++
+        }
+      }
+      if (lastType == "operand" && lastType != "(" && top != 0 && (counter1 > counter2)) {
         isValid = true ; 
       } 
       else {
-        window.alert("a closed bracket can only be entered after an operand") ;
+        window.alert("a closed bracket can only be entered after an operand and needs to be at the end or inside an open bracket clause") ;
       }
     }
      
     else if (inputBtnObj instanceof inputButtonOperand) { 
      // operand validation
     // check for value and num ID
+      console.log("lastType:" + lastType) ;
+      
       if (lastType == "operator" || lastType == "(" || top ==0) {
         isValid = true ;
       }
@@ -99,10 +113,18 @@ function lineEquation () {
       }
     }
       if (isValid == true) {
-        window.alert("valid") ;
+        if (inpBtnId == "num") {
+          inputBtnObj.setValue() ;
+        }
+        window.alert(inputBtnObj.getDisplay()) ;
         this.push(inputBtnObj.getDisplay()) ; // doesn't work with the number object need to check if this is the last object or the one pressed when we add it to the list
-        if (inputBtnObj instanceof inputButtonOperator && inputBtnObj.getType() == "unary") {
+        let equObj = document.getElementById("lines").rows[0].children[1] ;
+        console.log(equObj) ;
+        equObj.innerHTML =  equObj.innerHTML + inputBtnObj.getDisplay() ;
+        if (inputBtnObj instanceof inputButtonOperator && inputBtnObj.getType() == "unary" && inpBtnId != "(" && inpBtnId != ")") {
+          window.alert("bracket added") ;
           this.push("(") ;
+           equObj.innerHTML =  equObj.innerHTML + "(";
         }
       }
       else {
@@ -316,17 +338,29 @@ function inputButtonList() {
   // operators - display,id/key,type
   // operands - display,id/key,value
   const numObj = new inputButtonOperand("0","num","0") // needs to be updated
-  numObj.setValue = function (inpValue) {
-    if (typeof(inpValue) != "number" && typeof(inpValue) != "float") {
-      window.alert("value must be a number or float") ;
+  numObj.setValue = function () {
+    let inpValue  ;
+    let valid = false ;
+      while (valid == false) {
+        valid = true ;
+      inpValue = Number(window.prompt("enter a number between a millionth and a million")) ;
+        //console.log(inpValue) ;
+        //console.log(typeof(inpValue)) ;
+      if (isNaN(inpValue)) {
+        window.alert("value must be a number or float") ;
+        valid = false ;
+      }
+      else if (10**-6 > inpValue || inpValue > 10**6) {
+        window.alert("value must be between 10^-6 and 10^6") ;
+        valid = false ;
+      }
     }
-    else if (10**-6 > tinpValue || inpValue > 10**6) {
-      window.alert("value must be between 10^-6 and 10^6") ;
-    }
-    else {
-      this.value = inpValue ;
-      this.display = toString(inpvalue) ;
-    }
+    
+    this.value = +inpValue ;
+    this.display = inpValue ;
+    //window.alert(this.display) ;
+    //window.alert(this.value) ;
+    
   }
 
   const logaObj = new inputButtonOperator("logₐ","lg","0") // needs to be updated
@@ -391,12 +425,12 @@ function inputButtonList() {
 
   this.getInputButtonViaId = function(id) {
     let x = 0 ;
-    console.log(inputButtonList.length) ; 
+    //console.log(inputButtonList.length) ; 
     while (id != inputButtonList[x].getId() && x < inputButtonList.length -1 ) {
-      console.log(x) ;
+      //console.log(x) ;
       x++ ;
     }
-    console.log(inputButtonList[x]) ;
+    //console.log(inputButtonList[x]) ;
     if (id == inputButtonList[x].getId() ) {
       return inputButtonList[x] ;
     }
@@ -406,14 +440,20 @@ function inputButtonList() {
     }
   }
   this.getInputButtonViaDisplay = function(display) {
+    console.log("display" + display) ;
+    if (!(isNaN(display))) {
+      display = "0" ;
+      console.log("display updated") ;
+    }
     let x = 0 ;
-    console.log(inputButtonList.length) ; 
-    while (display != inputButtonList[x].getDisplay() && x < inputButtonList.length -1 ) {
-      console.log(x) ;
+    //console.log(inputButtonList.length) ; 
+    while (display != inputButtonList[x].getDisplay() && x < inputButtonList.length-1) {
+      //console.log(x) ;
+      //console.log(inputButtonList[x].getDisplay()) ;
       x++ ;
     }
-    console.log(inputButtonList[x]) ;
-    if (display == inputButtonList[x].getId() ) {
+    //console.log(inputButtonList[x]) ;
+    if (display == inputButtonList[x].getDisplay() ) {
       return inputButtonList[x] ;
     }
     else {
@@ -425,11 +465,13 @@ function inputButtonList() {
 }
 Object.assign(inputButtonOperator.prototype, new inputButtonPrototype()) ;
 Object.assign(inputButtonOperand.prototype, new inputButtonPrototype()) ;
-const testbtn = new inputButtonOperator("*", "x","binary") ;
-console.log(testbtn.getId()) ;
-console.log(testbtn.getDisplay()) ;
-const testInputList = new inputButtonList() ;
-const btn = testInputList.getInputButtonViaId("num") ;
+//testing stuff
+
+//const testbtn = new inputButtonOperator("*", "x","binary") ;
+//console.log(testbtn.getId()) ;
+//console.log(testbtn.getDisplay()) ;
+//const testInputList = new inputButtonList() ;
+//const btn = testInputList.getInputButtonViaId("num") ;
 
 
 
@@ -455,7 +497,7 @@ function cycle (e) {
 }
 function input (e) {
   const inputButtons = new inputButtonList() ;
-  console.log(e.target.id) ;
+  //console.log(e.target.id) ;
   lineist.validate(inputButtons.getInputButtonViaId(e.target.id)) ;
 }
 
@@ -472,3 +514,7 @@ function jsOnload () {
   
 }
 var lineist = new lineEquation() ;
+
+
+// think deeper about each paort and how they should and need to intereact
+//check the 
