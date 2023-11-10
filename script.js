@@ -37,7 +37,6 @@ function lineEquation () {
     console.log(top) ;
     const inputButtons = new inputButtonList() ;
     var lastType = "" ;
-
     if (top != 0) {
       //console.log("stack[top]"+stack[top-1]) ;
       var lastButtonObj = inputButtons.getInputButtonViaId(stack[top-1])
@@ -58,10 +57,14 @@ function lineEquation () {
         // type for last item must be binary since the last item must be an open bracket if the item is unary operator
       }
     }
-    console.log("lastType:" + lastType) ;
-    if (inpBtnId == "(" || top == 0){ //follow comments above for order
+
+
+
+
+    //validation
+    if (inpBtnId == "("){ //follow comments above for order
        // open bracket validation
-      if (lastType != "operand" && lastType != ")") {
+      if ((lastType != "operand" && lastType != ")") || top == 0) {
         isValid = true ; 
       } 
       else {
@@ -102,7 +105,7 @@ function lineEquation () {
     }
     
     else if (inputBtnObj instanceof inputButtonOperator && inputBtnObj.getType() == "binary") { 
-      console.log("binary in here?") ;// binary operator validation
+      // binary operator validation
       if (lastType != "(" && top != 0 && lastType != "operator") {
         isValid = true ;
       }
@@ -118,24 +121,26 @@ function lineEquation () {
         window.alert("you cannot have a unary operator after an operand") ;
       }
     }
+
+    //placing symbol into display and the line if valid
     var value = 0 ;
     if (inpBtnId == "num" && isValid == true) {
-      value = inputBtnObj.setValue() ;
-      console.log("Value:"+ value) ;
+      value = inputBtnObj.setValue() ; // prompting user for input 
+      //console.log("Value:"+ value) ;
     }
     
     if (isValid != true) {
        window.alert("invalid") ;
     } 
-    else if (value == null) {
+    else if (value == null) { // pressed cancel button when entering a value for num
       window.alert("input Cancelled")
     }
     else if (!(top < size -1)) {
       window.alert("max length of equation reached") ;
     }
     else {
-      window.alert(inputBtnObj.getDisplay()) ;
-      console.log(equObj) ;
+      //window.alert(inputBtnObj.getDisplay()) ;
+      //console.log(equObj) ;
       this.push(inputBtnObj.getId())
       equObj.innerHTML =  equObj.innerHTML + inputBtnObj.getDisplay() ;
       
@@ -477,18 +482,21 @@ function input (e) {
 }
 
 function lineNumber (e) {
-  console.log("hello") ;
-  console.log(e.target.innerHTML) ;
-  let lineNumberButtons = document.getElementsByClassName("lineNumber") ;
-  let length = document.getElementById("lines").rows.length ;
-  console.log(length) ;
+  //console.log("hello") ;
+  //console.log(e.target.innerHTML) ;
+  let linesTable = document.getElementById("lines")
+  let length = linesTable.rows.length ;
+  //console.log(length) ;
+  //console.log(linesTable.rows[0].children[0].children[0].innerHTML) ;
   let newLineNumber = -1 ;
   for (let i = 0 ; i < length; i++) {
-    if (e.target.innerHTML == document.getElementById("lines").rows[0].children[0].innerHTML) { // this line is bad/not working
+    if (e.target.innerHTML == linesTable.rows[i].children[0].children[0].innerHTML) { 
       newLineNumber = i  ;
-      
+      linesTable.rows[i].children[0].children[0].style.backgroundColor = "white" ;
     }
-    console.log(lineNumberButtons.rows[i].children[0]) ;
+    else {
+      linesTable.rows[i].children[0].children[0].style.backgroundColor = "grey";
+    }
   }
   console.log("lineNumber:" + newLineNumber) ;
   lines.setLine(newLineNumber) ;
@@ -512,6 +520,7 @@ function jsOnload () {
 }
 const lines = new lineList () ;
 const inputButtons = new inputButtonList() ;
+lines.addLine() ;
 lines.addLine() ;
 lines.addLine() ;
 lines.setLine(0) ;
