@@ -22,6 +22,15 @@ function lineEquation () {
        return "underflow" ;
     }
   }
+  this.count = function(id) {
+    let counter = 0 ;
+    for (let i = 0 ; i<= top ; i++) {
+      if (id == stack[i]) {
+        counter++ ;
+      }
+    }
+    return counter ;
+  }
   
   this.display = function () { // only for testing
     for (let i = 0 ; i < top ; i++) {
@@ -58,9 +67,6 @@ function lineEquation () {
       }
     }
 
-
-
-
     //validation
     if (inpBtnId == "("){ //follow comments above for order
        // open bracket validation
@@ -73,16 +79,8 @@ function lineEquation () {
     }  
     else if (inpBtnId == ")") {
       //closed bracket validation
-      let counter1 = 0 ;
-       let counter2 = 0 ;
-      for (let i = 0 ; i<= top ; i++) {
-        if ("(" == stack[i]) {
-          counter1++ ;
-        }
-        else if (")" == stack[i]) {
-          counter2++
-        }
-      }
+      let counter1 = this.count("(") ;
+      let counter2 = this.count(")") ;
       if ((lastType == "operand" || lastType == ")") && lastType != "(" && top != 0 && (counter1 > counter2)) {
         isValid = true ; 
       } 
@@ -347,17 +345,13 @@ function inputButtonList() {
         do {
           valid = true ;
           inpValue = window.prompt("enter a number between (5dp) -10^6 and 10^6")  ;
-          //window.alert("inpValue"+inpValue) ;
-          if (inpValue == "") {
-            inpValue = null ;
-            break ;
+          if (inpValue == "" || inpValue == null) {
+           return null ;
           }
-          if (inpValue != "cancel") {
+          else  {
             inpValue = Number(inpValue)
           }
-          else {
-            break ;
-          }
+          
           //console.log(inpValue) ;
           //console.log(typeof(inpValue)) ;
           if (isNaN(inpValue)) {
@@ -366,12 +360,12 @@ function inputButtonList() {
           }
           else if (inpValue % 1 != 0) { // check if number is a float
             let lengthInp = inpValue.toString().length -2 ;
-            if (lengthInp > 5) {
-              lengthInp = 5 ;
+            if (lengthInp > 6) {
+              lengthInp = 6 ;
             }
-            inpValue = Number.parseFloat(inpValue).toFixed(lengthInp) ; //doesnt round up, truncates
+            inpValue = Number.parseFloat(inpValue).toFixed(lengthInp) ; //round up?, truncates?
           }
-          else if (inpValue > 10**6 || inpValue < -(10**6)) {
+          else if (inpValue >= 10**6 || inpValue <= -(10**6)) {
             window.alert("value must be between 10^-6 and 10^6") ;
             valid = false ;
           }
