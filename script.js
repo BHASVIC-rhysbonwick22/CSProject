@@ -131,7 +131,7 @@ function lineEquation () {
        window.alert("invalid") ;
     } 
     else if (value == null) { // pressed cancel button when entering a value for num
-      window.alert("input Cancelled")
+      window.alert("input Cancelled");
     }
     else if (!(top < size -1)) {
       window.alert("max length of equation reached") ;
@@ -177,7 +177,7 @@ function lineList () {
       length-- ;
     }
     
-    if (currentLine > index) { // since all lines after the deleted line get shifted left, if CurrentLine is one of theose lines then the index will be differrent
+    if (currentLine > index) { // since all lines after the deleted line get shifted left, if CurrentLine is one of those lines then the index will be differrent
       currentLine -- ; 
     }
   }
@@ -298,14 +298,14 @@ function stage1Testing () {
   // works perfect - correct values are popped and correct values are displayed in the correct order! 
 
   //test 7 
-  /*testEquation1.pop() ;
+  testEquation1.pop() ;
   for (let i = 0 ; i<= 20 ; i++) {
        testEquation1.push(i.toString()) ; // 0,1,2,3...19 and then 20 is ignored due to overflow 
-  */
-  //} 
+  
+  } 
   testEquation1.display() ;
   // works - underflow is prevented and all pushes are made except the last one which would cause an overflow
-
+  
 }
 //stage 2
 
@@ -349,7 +349,7 @@ function inputButtonList() {
            return null ;
           }
           else  {
-            inpValue = Number(inpValue)
+            inpValue = Number(inpValue) ;
           }
           
           //console.log(inpValue) ;
@@ -478,7 +478,7 @@ function input (e) {
 function lineNumber (e) {
   //console.log("hello") ;
   //console.log(e.target.innerHTML) ;
-  let linesTable = document.getElementById("lines")
+  let linesTable = document.getElementById("lines") ;
   let length = linesTable.rows.length ;
   //console.log(length) ;
   //console.log(linesTable.rows[0].children[0].children[0].innerHTML) ;
@@ -520,5 +520,3 @@ lines.addLine() ;
 lines.setLine(0) ;
 
 
-// think deeper about each paort and how they should and need to intereact
-//check the 
