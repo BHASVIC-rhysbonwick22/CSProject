@@ -160,9 +160,11 @@ function lineList () {
       let newLine  = new line() ;
       list[length] = newLine ;
       length++ ;
+      return true ;
     }
     else {
       window.alert("max number of lines reached: 8") ;
+      return false ;
     }
   }
   this.removeLine = function (index) { 
@@ -474,7 +476,7 @@ function cycle (e) {
 function input (e) {
     lines.getLine().getEquation().validate(inputButtons.getInputButtonViaId(e.target.id),lines.getEquObj()) ;
 }
-
+/* ----------- SOME EVENT HANDLERS ------------ */
 function lineNumber (e) {
   //console.log("hello") ;
   //console.log(e.target.innerHTML) ;
@@ -496,6 +498,55 @@ function lineNumber (e) {
   lines.setLine(newLineNumber) ;
 }
 
+function CycleColour(e) {
+  window.alert(e.innerHTML) ;
+}
+function changeGradientState(e) {
+  window.alert(e.innerHTML) ;
+}
+function changeGraphedState(e) {
+  window.alert(e.innerHTML) ;
+}
+function backspace(e) {
+  window.alert(e.innerHTML) ;
+}
+function delLine (e) {
+  window.alert(e.innerHTML) ;
+}
+function insert () {
+  if (lines.addLine() ==  false) { // global store of lines .addline() creates and adds a new line
+    return false ;
+  }
+  else {
+    let lineTable = document.getElementById("lines") ;
+    let Nrows = lineTable.rows.length ;
+    let lastRow  = lineTable.insertRow(Nrows) ;
+    var attributeButtons = [
+    ["lineNumber", (Nrows+1).toString()  , lineNumber],
+    ["colour","" , "CycleColour"],
+    ["Gradient" , "G" , changeGradientState],
+    ["graphed" , "X" , changeGraphedState],
+    ["backspace" , "<-" , backspace],
+    ["delete" , "DEL" , delLine]];
+    
+    for (let i = 0 ; i <= attributeButtons.length-1 ; i++) {
+       lastRow.insertCell(i) ;
+      lastRow.children[i].classList.add("equation") ;
+      if (i==1) {
+        lastRow.children[i].innerHTML = "Equation:" ;
+      }
+      else {
+        let btn = document.createElement("button") ;
+        btn.addEventListener("click" , attributeButtons[i][2]) ;
+        btn.classList.class = attributeButtons[i][0] ;
+        btn.innerHTML = attributeButtons[i][1] ;
+        lastRow.children[i].appendChild(btn) ;
+      }
+    }
+  
+  }
+}
+
 window.onload = jsOnload ;
 function jsOnload () {
    const cycleButtons = document.getElementsByClassName("cycleButton") ;
@@ -510,13 +561,13 @@ function jsOnload () {
   for (let i =0 ; i < lineNumberButtons.length ; i++) {
       lineNumberButtons[i].addEventListener("click" , lineNumber) ;
   }  
+  const insertBtn = document.getElementById("insert") ;
+  insertBtn.addEventListener("click" , insert) ;
   
 }
 const lines = new lineList () ;
 const inputButtons = new inputButtonList() ;
-lines.addLine() ;
-lines.addLine() ;
-lines.addLine() ;
+
 lines.setLine(0) ;
 
 

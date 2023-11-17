@@ -108,6 +108,7 @@ tr {
   border: 1px solid #FFFFFF;
   left: 7.5% ;
   display:block ;
+  overflow: scroll ;
 
 }
 #lines {
@@ -153,6 +154,7 @@ tr {
   height: 100% ;
   width: 100% ;
 }
+
 button:hover {
   background-color: #AAAAAA ;
   cursor: pointer ; 
