@@ -573,7 +573,7 @@ function backspace(e) {
   else {
     window.alert(popped) ;
     var poppedButton = buttonList.getInputButtonViaId(popped) ;
-    if (popped == "num") { // removing lat number if value is a number
+    if (popped == "num") { // removing lsat number if id  is a number
       let displayList = display.split("") ;
       let count = 0 ;
       for (let i = display.length-1 ; i >= 0 ; i--) {
@@ -635,7 +635,7 @@ function insert () {
       num = 0 ;
     }
     else {
-       num = lineTable.rows[Nrows-1].children[0].innerHTML ;
+       num = parseInt(lineTable.rows[Nrows-1].children[0].children[0].innerHTML) ;
     }
     // UPDATE THIS
     let lastRow  = lineTable.insertRow(Nrows) ; // insertRow returns the new row object
