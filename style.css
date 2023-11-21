@@ -154,7 +154,12 @@ tr {
   height: 100% ;
   width: 100% ;
 }
-
+.gradient {
+  text-decoration: "line-through" ;
+}
+.colour {
+  background-color: "FFFFFF" ;
+}
 button:hover {
   background-color: #AAAAAA ;
   cursor: pointer ; 

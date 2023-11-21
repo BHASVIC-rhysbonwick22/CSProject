@@ -13,14 +13,27 @@ function lineEquation () {
     }
   } 
   this.pop = function () {
-    if (top != 0) {
-      top -- ;
-      return stack[top] ;
+    const inputButtons = new inputButtonList() ;
+    let str = ""
+    //window.alert(inputButtons.getInputButtonViaId(stack[top-1]).getType()) ;
+    //window.alert(stack[top]) ;
+    if (top != 0 && stack[top-1] == "(" &&  (inputButtons.getInputButtonViaId(stack[top-2]).getType() == "unary" || stack[top-2] == "^") && stack[top-2] != "(") {
+       top -= 2 ;
+      str += stack[top+1] ;
+      str += stack[top] ;
+     
     }
+    
+    else if (top != 0) {
+      top -- ;
+      str += stack[top] ;
+    }
+    
     else {
       //window.alert("underflow")
-       return "underflow" ;
+       str = "underflow" ;
     }
+    return str ;
   }
   this.count = function(id) {
     let counter = 0 ;
@@ -171,6 +184,7 @@ function lineList () {
     // used later for the delete key in stage 3
     if (currentLine == index) { // also prevents removing all lines (underflow)
         window.alert("Cannot remove line that is currently selected. Select a differrent line to delete this line") ;
+      return false ;
     }
     else {
       for (let i = index ; i < length-1 ; i++) {
@@ -178,22 +192,26 @@ function lineList () {
       }
       length-- ;
     }
-    
     if (currentLine > index) { // since all lines after the deleted line get shifted left, if CurrentLine is one of those lines then the index will be differrent
       currentLine -- ; 
     }
+    return true ;
   }
   this.getLine = function() {
     return list[currentLine] ;
   }
+  this.getLineViaIndex = function (index) {
+     return list[index] ;
+  }
   this.setLine = function(val) {
-    // used for lineNumber buttons that first appear in stage 2
+     // used for lineNumber buttons that first appear in stage 2
     // note that currentLine also gets changed in delete line in some cases since the index of the line changes
     currentLine = val ;
   }
   this.display = function () { // only for testing
     for (let i = 0 ; i < length ; i++) {
       console.log(list[i]) ;
+      console.log(list[i].getColour()) ;
     }
     console.log(currentLine) ;
   } 
@@ -228,6 +246,7 @@ function line () {
     else {
       colour = colours[0] ;
     }
+    return colour
   }
   
   this.getGraph = function() {
@@ -496,22 +515,113 @@ function lineNumber (e) {
   }
   console.log("lineNumber:" + newLineNumber) ;
   lines.setLine(newLineNumber) ;
+  lines.display() ;
 }
 
 function CycleColour(e) {
-  window.alert(e.innerHTML) ;
-}
-function changeGradientState(e) {
-  window.alert(e.innerHTML) ;
+  
+  console.log("line index:") ;
+  console.log(e.target.parentElement.parentElement.rowIndex) ; // this should be fine -  needs to be tested with the functioanality of the delete line method
+  let lineIndex = e.target.parentElement.parentElement.rowIndex ;
+  let line = lines.getLineViaIndex(lineIndex)  
+  line.setColour() ;
+  e.target.style.backgroundColor = line.getColour() ;  
 }
 function changeGraphedState(e) {
-  window.alert(e.innerHTML) ;
+  let lineIndex = e.target.parentElement.parentElement.rowIndex ;
+  let line = lines.getLineViaIndex(lineIndex) ;  
+  line.setGraph() ;
+  //console.log(line.getGraph()) ;
+  if (line.getGraph()) {
+    console.log(e.target) ;
+     e.target.innerHTML = "YES" ;
+  }
+  else {
+     e.target.innerHTML = "NO" ;
+  }
 }
+function changeGradientState(e) {
+  let lineIndex = e.target.parentElement.parentElement.rowIndex ;
+  let line = lines.getLineViaIndex(lineIndex)  ;
+  line.setGradientGraph() ;
+  if (line.getGradientGraph()) {
+     e.target.style.textDecoration = "none" ;
+  }
+  else {
+     e.target.style.textDecoration = "line-through" ;
+  }
+}
+
 function backspace(e) {
-  window.alert(e.innerHTML) ;
+  const lineIndex = e.target.parentElement.parentElement.rowIndex ; // the row that the button is in 
+  console.log(lineIndex) ;
+  const line = lines.getLineViaIndex(lineIndex) ;  
+  var display = e.target.parentElement.parentElement.children[1].innerHTML ;
+  console.log(display) ;
+  const buttonList =  new inputButtonList() ;
+  var popped = line.getEquation().pop() // stack updated
+  
+  if (popped == "underflow") {
+    window.alert("equation is empty") ;
+  }
+  else  if (popped.split("")[0] == "(" && popped.split("").length > 1) { // if last thing was a bracket then also remove the unary operator if there is one before it 
+    var temp = popped.replace("(","")
+    var poppedButton = buttonList.getInputButtonViaId(temp) ;
+    var poppedDisplay = poppedButton.getDisplay() ;
+    popped = poppedDisplay + "("  ;
+  }
+  else {
+    window.alert(popped) ;
+    var poppedButton = buttonList.getInputButtonViaId(popped) ;
+    if (popped == "num") { // removing lat number if value is a number
+      let displayList = display.split("") ;
+      let count = 0 ;
+      for (let i = display.length-1 ; i >= 0 ; i--) {
+        if (displayList[i] == "-") {
+          count++ ;
+          break ;
+        } 
+        else if (displayList[i] == ".") {
+          count++ ;
+        }
+        else if (isNaN(displayList[i])) {
+          break ;
+        }
+        else {
+          count++ ;
+        }  
+      }
+      displayList = displayList.slice(displayList.length - count,displayList.length) ;
+      //console.log(displayList) ;
+      //console.log("Count:" + count) ;
+      popped = displayList.join("") ; 
+      console.log("POPPED:"+ popped) ;
+    }
+    else {
+      var poppedDisplay = poppedButton.getDisplay() ;
+      popped = poppedDisplay ;
+    }
+  }
+  //console.log("pop return" + popped) ;
+  // if we reverse both the substring and the orginal string the replace function will remove the last occurrence of that substring in the orignal string if we then reverse the orignal string after
+  temp = display.split("").reverse().join("") // reversed string
+  popped = popped.split("").reverse().join("") ; // reversed string
+  temp = temp.replace(popped, "") // Rempove reversed string from reversed display
+  let newDisplay = temp.split("").reverse().join("") ; // changing back string to original way round
+  //console.log(newDisplay) ;
+  e.target.parentElement.parentElement.children[1].innerHTML= newDisplay ;
+  
 }
 function delLine (e) {
-  window.alert(e.innerHTML) ;
+  let lineIndex = e.target.parentElement.parentElement.rowIndex ;
+  let line = lines.getLineViaIndex(lineIndex) ;  
+  if (lines.removeLine(lineIndex) ==  false) { // global store of lines .addline() creates and adds a new line
+    return false ;
+  }
+  else {
+    e.target.parentElement.parentElement.parentElement.deleteRow(lineIndex) ;
+  }
+  
 }
 function insert () {
   if (lines.addLine() ==  false) { // global store of lines .addline() creates and adds a new line
@@ -520,30 +630,47 @@ function insert () {
   else {
     let lineTable = document.getElementById("lines") ;
     let Nrows = lineTable.rows.length ;
-    let lastRow  = lineTable.insertRow(Nrows) ;
+    var num = 0 ;
+    if (Nrows == 0) {
+      num = 0 ;
+    }
+    else {
+       num = lineTable.rows[Nrows-1].children[0].innerHTML ;
+    }
+    // UPDATE THIS
+    let lastRow  = lineTable.insertRow(Nrows) ; // insertRow returns the new row object
     var attributeButtons = [
-    ["lineNumber", (Nrows+1).toString()  , lineNumber],
-    ["colour","" , "CycleColour"],
-    ["Gradient" , "G" , changeGradientState],
-    ["graphed" , "X" , changeGraphedState],
+    ["lineNumber", (num+1).toString()  , lineNumber],
+    ["colour","Colour" , CycleColour],
+    ["gradient" , "G" , changeGradientState],
+    ["graphed" , "NO" , changeGraphedState],
     ["backspace" , "<-" , backspace],
     ["delete" , "DEL" , delLine]];
     
     for (let i = 0 ; i <= attributeButtons.length-1 ; i++) {
        lastRow.insertCell(i) ;
       lastRow.children[i].classList.add("equation") ;
-      if (i==1) {
+      
+      let btn = document.createElement("button") ;
+      btn.addEventListener("click" , attributeButtons[i][2]) ;
+      btn.classList.class = attributeButtons[i][0] ;
+      btn.innerHTML = attributeButtons[i][1] ;
+      lastRow.children[i].appendChild(btn) ;
+      if (i==1) { // equation display
+        lastRow.insertCell(i) ;
+        lastRow.children[i].classList.add("equation") ;
         lastRow.children[i].innerHTML = "Equation:" ;
       }
-      else {
-        let btn = document.createElement("button") ;
-        btn.addEventListener("click" , attributeButtons[i][2]) ;
-        btn.classList.class = attributeButtons[i][0] ;
-        btn.innerHTML = attributeButtons[i][1] ;
-        lastRow.children[i].appendChild(btn) ;
+      else if (i==2) { // set up for new gradient button
+        lastRow.children[i].children[0].style.textDecoration = "line-through" ;
       }
     }
-  
+    if (Nrows == 0) { // line number for line 1
+        lastRow.children[0].children[0].style.backgroundColor = "white" ;
+    }
+    else { // line number default for every other line
+      lastRow.children[0].children[0].style.backgroundColor = "grey" ;
+    }
   }
 }
 
@@ -563,7 +690,7 @@ function jsOnload () {
   }  
   const insertBtn = document.getElementById("insert") ;
   insertBtn.addEventListener("click" , insert) ;
-  
+  insert() ;
 }
 const lines = new lineList () ;
 const inputButtons = new inputButtonList() ;
