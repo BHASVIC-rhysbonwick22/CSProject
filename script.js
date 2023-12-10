@@ -69,58 +69,103 @@ function inputButtonList() {
   }
   var inputButtonList = [ 
     //unary
-    new inputButtonOperator("(","(","unary") ,
-    new inputButtonOperator(")",")","unary") ,
-    new inputButtonOperator("sin","sin","unary") ,
-    new inputButtonOperator("cos","cos","unary"),
-    new inputButtonOperator("tan","tan","unary"),
-    new inputButtonOperator("sec","sec","unary"),
-    new inputButtonOperator("cosec","csc","unary"),
-    new inputButtonOperator("cot","cot","unary"),
-    new inputButtonOperator("arctan","atan","unary"),
-    new inputButtonOperator("arcsin","asin","unary"),
-    new inputButtonOperator("arccos","acos","unary"),
-    new inputButtonOperator("arctan","atan","unary"),
-    new inputButtonOperator("arcsec","asec","unary"),
-    new inputButtonOperator("arccosec","acsc","unary"),
-    new inputButtonOperator("arccot","acot","unary"),
-    new inputButtonOperator("ln","le","unary"),
-    new inputButtonOperator("Modulus","m","unary"),
-    new inputButtonOperator("floor","f","unary"),
-    new inputButtonOperator("celing","c","unary"),
-    new inputButtonOperator("sinh","sinh","unary"),
-    new inputButtonOperator("cosh","cosh","unary"),
-    new inputButtonOperator("tanh","tanh","unary"),
-    new inputButtonOperator("sech","sech","unary"),
-    new inputButtonOperator("cosech","csch","unary"),
-    new inputButtonOperator("coth","coth","unary"),
-    new inputButtonOperator("arsinh","asinh","unary"),
-    new inputButtonOperator("arcosh","acosh","unary"),
-    new inputButtonOperator("artanh","atanh","unary"),
-    new inputButtonOperator("arsech","asech","unary"),
-    new inputButtonOperator("arcosech","acsch","unary"),
+    new inputButtonOperator("(","(","unary") , // 0 
+    new inputButtonOperator(")",")","unary") , // 1
+    new inputButtonOperator("sin","sin","unary") ,// 2 
+    new inputButtonOperator("cos","cos","unary"), // 3
+    new inputButtonOperator("tan","tan","unary"), // 4
+    new inputButtonOperator("sec","sec","unary"), // 5
+    new inputButtonOperator("cosec","csc","unary"), // 6
+    new inputButtonOperator("cot","cot","unary"), // 7
+    new inputButtonOperator("arctan","atan","unary"),// 8
+    new inputButtonOperator("arcsin","asin","unary"),// 9
+    new inputButtonOperator("arccos","acos","unary"),// 10
+    new inputButtonOperator("arcsec","asec","unary"),// 11
+    new inputButtonOperator("arccosec","acsc","unary"),//12
+    new inputButtonOperator("arccot","acot","unary"), // 13
+    new inputButtonOperator("ln","le","unary"),// 14
+    new inputButtonOperator("Modulus","m","unary"), // 15
+    new inputButtonOperator("floor","f","unary"), // 16
+    new inputButtonOperator("celing","c","unary"),// 17
+    new inputButtonOperator("sinh","sinh","unary"), // 18
+    new inputButtonOperator("cosh","cosh","unary"), // 19
+    new inputButtonOperator("tanh","tanh","unary"),//20
+    new inputButtonOperator("sech","sech","unary"),//21
+    new inputButtonOperator("cosech","csch","unary"), // 22
+    new inputButtonOperator("coth","coth","unary"), // 23
+    new inputButtonOperator("arsinh","asinh","unary"), // 24
+    new inputButtonOperator("arcosh","acosh","unary"), // 25
+    new inputButtonOperator("artanh","atanh","unary"), // 26
+    new inputButtonOperator("arsech","asech","unary"), // 27
+    new inputButtonOperator("arcosech","acsch","unary"), // 28
+    new inputButtonOperator("arcoth","acoth","unary"), // 29
     //binary
-    new inputButtonOperator("x","*","binary") ,
-    new inputButtonOperator("+","+","binary") ,
-    new inputButtonOperator("-","-","binary") ,
-    new inputButtonOperator("/","/","binary") ,
-    new inputButtonOperator("^","^","binary") , 
-    // requires brackets after it to make sure user understands when the exponentaion ends
+    new inputButtonOperator("x","*","binary") , // 30
+    new inputButtonOperator("+","+","binary") , //31
+    new inputButtonOperator("-","-","binary") , // 32
+    new inputButtonOperator("/","/","binary") , // 33
+    new inputButtonOperator("^","^","binary") , // 34
    //operands
-    new inputButtonOperand("π","p",toString(Math.PI)) ,
-    new inputButtonOperand("e","e",toString(Math.E)) ,
+    new inputButtonOperand("π","p",Math.PI) ,
+    new inputButtonOperand("e","e",Math.E) ,
     new inputButtonOperand("𝑥","x","x") ,
     numObj 
   ] ;
+  inputButtonList[2].eval = (a) => {return Math.sin(a)} ;
+  inputButtonList[3].eval = (a) => {return Math.cos(a)} ;
+  inputButtonList[4].eval = (a) => {return Math.tan(a)} ;
+  
+  inputButtonList[5].eval = (a) => {return 1/Math.cos(a)} ;
+  inputButtonList[6].eval = (a) => {return 1/Math.sin(a)} ;
+  inputButtonList[7].eval = (a) => {return 1/Math.tan(a)} ;
+  
+  inputButtonList[8].eval = (a) => {return Math.atan(a)} ;
+  inputButtonList[9].eval = (a) => {return Math.asin(a)} ;
+  inputButtonList[10].eval = (a) => {return Math.acos(a)} ;
+  
+  inputButtonList[11].eval = (a) => {return Math.acos(1/a)} ;
+  inputButtonList[12].eval = (a) => {return Math.asin(1/a)} ;
+  inputButtonList[13].eval = (a) => {return Math.PI/2 - Math.atan(1/a)} ;
+  
+  inputButtonList[14].eval = (a) => {return Math.log(a)} ;
+  
+  inputButtonList[15].eval = (a) => {return Math.sqrt((a**2))} ;
+  inputButtonList[16].eval = (a) => {return Math.floor(a)} ;
+  inputButtonList[17].eval = (a) => {return Math.ceiling(a)} ;
+  
+  inputButtonList[18].eval = (a) => {return Math.sinh(a)} ;
+  inputButtonList[19].eval = (a) => {return Math.cosh(a)} ;
+  inputButtonList[20].eval = (a) => {return Math.tanh(a)} ;
+  
+  inputButtonList[21].eval = (a) => {return 1/Math.cosh(a)} ; 
+  inputButtonList[22].eval = (a) => {return 1/Math.sinh(a)} ;
+  inputButtonList[23].eval = (a) => {return 1/Math.tanh(a)} ; 
+  
+  inputButtonList[24].eval = (a) => {return Math.acosh(a)} ;
+  inputButtonList[25].eval = (a) => {return Math.asinh(a)} ;
+  inputButtonList[26].eval = (a) => {return Math.atanh(a)} ;
 
+  inputButtonList[27].eval = (a) => {return Math.asinh(1/a)} ;
+  inputButtonList[28].eval = (a) => {return Math.acosh(1/a)} ;
+  inputButtonList[29].eval = (a) => {return Math.atanh(1/a)} ;
+
+  // binary
+   inputButtonList[30].eval = (a,b) => {return a*b} ;
+   inputButtonList[31].eval = (a,b) => {return a+b} ;
+   inputButtonList[32].eval = (a,b) => {return a-b} ;
+   inputButtonList[33].eval = (a,b) => {return a/b} ;
+   inputButtonList[34].eval = (a,b) => {return b**a} ; // needs to be tested due to right asccoiactivity etc
+  
   this.getInputButtonViaId = function(id) {
     let x = 0 ;
     if (!isNaN(id)) {
       id = "num" ;
     }
+    //console.log("Id:" + id) ;
     //console.log(inputButtonList.length) ; 
     while (id != inputButtonList[x].getId() && x < inputButtonList.length -1 ) {
       //console.log(x) ;
+      //console.log(inputButtonList[x]) ;
       x++ ;
     }
     //console.log(inputButtonList[x]) ;
@@ -137,7 +182,7 @@ Object.assign(inputButtonOperator.prototype, new inputButtonPrototype()) ;
 Object.assign(inputButtonOperand.prototype, new inputButtonPrototype()) ;
 
 
-function operatorStack () {
+function memoryStack () {
   var size = 20 ;
   var stack = [] ;
   var top = 0 ;
@@ -187,31 +232,38 @@ function lineEquation () {
       return "overflow" ;
     }
   } 
+  
   this.pop = function () {
     const inputButtons = new inputButtonList() ;
     let str = ""
     //window.alert(inputButtons.getInputButtonViaId(stack[top-1]).getType()) ;
     //window.alert(stack[top]) ;
-    if (top != 0 && stack[top-1] == "(" &&  (inputButtons.getInputButtonViaId(stack[top-2]).getType() == "unary" || stack[top-2] == "^") && stack[top-2] != "(") {
-       top -= 2 ;
+    if (top >= 2 && stack[top-1] == "(" &&  (inputButtons.getInputButtonViaId(stack[top-2]).getType() == "unary" || stack[top-2] == "^") && stack[top-2] != "(") {
+      top -= 2 ;
       str += stack[top+1] ;
       str += stack[top] ;
+      
+      stack[top+1] = null ;
+      stack[top] =  null ;
     }
-    
     else if (top != 0) {
-      top -- ;
+      top -- ; 
       str += stack[top] ;
+      
+      stack[top] =  null ;
     }
-    
     else {
       //window.alert("underflow")
        str = "underflow" ;
+    } 
+    for (let i = 0 ; i<= stack.length -1 ;i++) {
+      console.log(stack[i]) ; 
     }
     return str ;
   }
   this.count = function(id) {
     let counter = 0 ;
-    for (let i = 0 ; i<= top ; i++) {
+    for (let i = 0 ; i<= top-1 ; i++) {
       if (id == stack[i]) {
         counter++ ;
       }
@@ -256,8 +308,8 @@ function lineEquation () {
   }
   this.convInfixToPostfix = function() {
     var postfix = [] ;
-    const symbolStack = new operatorStack() ;
-    const inputbuttons = new inputButtonList () ;
+    const symbolStack = new memoryStack() ; // for operators
+    const inputbuttons = new inputButtonList() ;
     const equation = [...stack] // copy of stack not by refrence
     for (let i = 0 ; i <=equation.length -1 ; i++) {
       console.log("i:"+ i) ;
@@ -292,32 +344,68 @@ function lineEquation () {
       else if (currSymObj instanceof inputButtonOperator && currSym != ")") {
         console.log("is operator!") ;
         console.log("symbolStacktop:" + symbolStack.getTop()) ;
-        while (symbolStack.getTop() != "(" && symbolStack.getTop() != "underflow" && (this.associativity(currSym) == "left" && this.precedence(symbolStack.getTop()) >= this.precedence(currSym) || this.associativity(currSym) == "right" && this.precedence(symbolStack.getTop()) >= this.precedence(currSym))) {
+        while (symbolStack.getTop() != "(" && symbolStack.getTop() != "underflow" && (this.associativity(currSym) == "left" && this.precedence(symbolStack.getTop()) > this.precedence(currSym) || this.associativity(currSym) == "right" && this.precedence(symbolStack.getTop()) >= this.precedence(currSym))) {
           postfix.push(symbolStack.pop()) ;
         }
       symbolStack.push(currSym) ; // push operator to top of stack
       }
     }
+    
      console.log("symbolStacktop: after operator added" + symbolStack.getTop()) ;
-
-
-    var j = postfix.length ;
     console.log("symbolStackLength:" + symbolStack.getLength()) ;
 
+    
     var temp = symbolStack.pop() ;
     console.log("temp:" + temp) ;
     while (temp != "underflow")  { // stack may still have some operators 
-      postfix.push(temp) 
+      postfix.push(temp) ;
       temp = symbolStack.pop() ;
     }
     
-    for (let i = 0 ; i<= postfix.length - 1 ;i++) {
-      console.log(postfix[i]) ;
-    }
+    
     for (let i = 0 ; i <= postfix.length ; i++) {
       console.log("postfix"+ i + postfix[i]) ;
     }
     return postfix ;
+  }
+  this.evalEq = function(x) { // x is type Number 
+    // assumes equation is valid
+    var postfix = this.convInfixToPostfix() ;
+    window.alert(postfix) ;
+    var operandStack = new memoryStack() ;
+    var inputBtns  = new inputButtonList() ;
+    let i = 0 ;
+    while (typeof postfix[i] != "undefined") {
+      //console.log("postfix" + postfix[i]) ;
+      let currBtn = inputBtns.getInputButtonViaId(postfix[i]) ;
+      if ( currBtn instanceof inputButtonOperand) {
+        let pushed = Number(postfix[i]) ;
+        if (postfix[i] == "x") {
+          pushed = x ; // if x thenm add curr x val
+          //window.alert("x found and set to" + pushed) ;
+        }
+        else if (isNaN(postfix[i])) {
+          //window.alert("constant found") ;
+          pushed = currBtn.getValue() ; // if constant (e.Pi,etc) add constant
+          //window.alert(pushed) ;
+        }
+        operandStack.push(pushed) ; // if  just number then add number
+      }
+        
+      else if (currBtn instanceof inputButtonOperator && currBtn.getType() == "unary"){ // don't have to check for brackets since postfix cannot have brackets
+        operandStack.push(currBtn.eval(operandStack.pop())) ; // evaluate top of stack operand with operator and then push back to the stack
+      }
+      else {
+        //window.alert("Binary operation") ;
+        //console.log(currBtn) ;
+        let a = operandStack.pop()
+        let b =operandStack.pop()
+        operandStack.push(currBtn.eval(a,b)) ; // evalaute the operator with the top 2 items in the stack and then push back
+      }
+      i++ ;
+    }
+    window.alert("EVAL:" + operandStack.getTop())
+    return operandStack.getTop() ; // the final value in stack will be the number
   }
   
   this.display = function () { // only for testing
@@ -375,7 +463,7 @@ function lineEquation () {
       //closed bracket validation
       let counter1 = this.count("(") ;
       let counter2 = this.count(")") ;
-      if ((lastType == "operand" || lastType == ")") && lastType != "(" && top != 0 && (counter1 > counter2)) {
+      if ((lastType == "operand" || lastType == ")")  && top != 0 && (counter1 > counter2)) {
         isValid = true ; 
       } 
       else {
@@ -442,12 +530,12 @@ function lineEquation () {
       }
       equObj.innerHTML =  equObj.innerHTML + inputBtnObj.getDisplay() ;
       
-      if ((inputBtnObj instanceof inputButtonOperator && inputBtnObj.getType() == "unary" && inpBtnId != "(" && inpBtnId != ")" )|| inpBtnId == "^") {
+      if ((inputBtnObj instanceof inputButtonOperator && inputBtnObj.getType() == "unary" && inpBtnId != "(" && inpBtnId != ")")) {
         window.alert("bracket added") ;
         this.push("(") ;
         equObj.innerHTML =  equObj.innerHTML + "(" ;
       }    
-    }    
+    } 
   }
 }
 
@@ -599,7 +687,7 @@ function lineNumber (e) {
   //console.log("lineNumber:" + newLineNumber) ;
   lines.setLine(newLineNumber) ;
   lines.display() ;
-  window.alert(lines.getLine().getEquation().convInfixToPostfix()) ;
+  window.alert(lines.getLine().getEquation().evalEq(1)) ;
   
 }
 
@@ -642,13 +730,14 @@ function backspace(e) {
   const line = lines.getLineViaIndex(lineIndex) ;  
   var display = e.target.parentElement.parentElement.children[1].innerHTML ;
   //console.log(display) ;
-  const buttonList =  new inputButtonList() ;
+  var buttonList =  new inputButtonList() ;
   var popped = line.getEquation().pop() // stack updated
-  
+  window.alert("popped" + popped) ;
+  poppedList = popped.split("") ;
   if (popped == "underflow") {
     window.alert("equation is empty") ;
   }
-  else  if (popped.split("")[0] == "(" && popped.split("").length > 1) { // if last thing was a bracket then also remove the unary operator if there is one before it 
+  else  if (poppedList[0] == "(" && poppedList.length > 1) { // if last thing was a bracket then also remove the unary operator if there is one before it 
     var temp = popped.replace("(","")
     var poppedButton = buttonList.getInputButtonViaId(temp) ;
     var poppedDisplay = poppedButton.getDisplay() ;
