@@ -910,9 +910,32 @@ function stage1Testing () {
   // works - underflow is prevented and all pushes are made except the last one which would cause an overflow
 
 }
-
+function preventFloats (e) {
+    if (e.keyCode == 190) { // keycode for .
+      window.alert("value must be a positive integer") ;
+      event.preventDefault() ; // deprecated
+    }
+  }
+function preventStrings (e) {
+  if (e.keyCode == 189 || e.keyCode == 69 || e.keyCode == 187) {// prevents - , e , +
+    window.alert("value must be a positive integer") ;
+    event.preventDefault() ;// deprecated 
+  }
+}
+function MaxDomain (e) {
+  console.log(e.target) ;
+  let currNum = (e.target.value+ e.key) ;
+  let upperLimit = parseInt(e.target.max) ;
+  //window.alert(upperLimit) ;
+  //window.alert(currNum) ;
+  if (currNum > upperLimit) {// upperLimit
+    window.alert("upper limit reached")
+    event.preventDefault() ;// deprecated 
+  } 
+}
 window.onload = jsOnload ;
 function jsOnload () {
+  
    const cycleButtons = document.getElementsByClassName("cycleButton") ;
   for (let i =0 ; i < cycleButtons.length ; i++) {
       cycleButtons[i].addEventListener("click" , cycle) ;
@@ -928,6 +951,10 @@ function jsOnload () {
   const insertBtn = document.getElementById("insert") ;
   insertBtn.addEventListener("click" , insert) ;
   insert() ;
+  const xDomainBtn = document.getElementById("domainInp") ;
+  xDomainBtn.addEventListener("keydown", preventStrings) ;
+  xDomainBtn.addEventListener("keydown", preventFloats) ;
+  xDomainBtn.addEventListener("keydown", MaxDomain) ;
 }
 const lines = new lineList () ;
 const inputButtons = new inputButtonList() ;
