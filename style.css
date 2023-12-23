@@ -1,4 +1,4 @@
-html {
+ahtml {
   height: 100%;
   width: 100%;
 }
@@ -91,10 +91,10 @@ tr {
   background-color: #394867 ;
   top: 60%;
   height: 30% ;
-  width: 51% ;
+  width: auto ;
   font-family: 'Times New Roman', Times, serif ;
   border: 1px solid #FFFFFF;
-  left: 7.5% ;
+  left: 2.5% ;
   display:block ;
 
 }
@@ -103,10 +103,10 @@ tr {
   background-color: #394867 ;
   top: 15%;
   height: 30% ;
-  width: 51% ;
+  width: 30% ;
   font-family: 'Times New Roman', Times, serif ;
   border: 1px solid #FFFFFF;
-  left: 7.5% ;
+  left: 2.5% ;
   display:block ;
   overflow: scroll ;
 
@@ -143,14 +143,27 @@ tr {
   background-color: #394867 ;
   top: 47.5%;
   height: 10% ;
-  width: 51% ;
+  width: 30% ;
   font-family: 'Times New Roman', Times, serif ;
   border: 1px solid #FFFFFF;
-  left: 7.5% ;
+  left: 2.5% ;
   display:block ;
   text-align:center;
 }
-
+#canvasWrapper {
+  position: absolute;
+  outline: 1px solid orange ;
+  overflow: scroll ;
+  height: 45% ;
+  width: 45% ;
+  left: 35% ;
+  top: 15% ;
+}
+#graph {
+ background-color: white;
+  width: 3000px ;
+  height: 3000px ;
+}
 
 .inputTable {
   width: auto ;
@@ -176,4 +189,7 @@ tr {
 button:hover {
   background-color: #AAAAAA ;
   cursor: pointer ; 
+}
+#domainInp {
+  font-size: 2vh ;
 }

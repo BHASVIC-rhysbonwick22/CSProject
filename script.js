@@ -153,7 +153,7 @@ function inputButtonList() {
    inputButtonList[30].eval = (a,b) => {return a*b} ;
    inputButtonList[31].eval = (a,b) => {return a+b} ;
    inputButtonList[32].eval = (a,b) => {return a-b} ;
-   inputButtonList[33].eval = (a,b) => {return a/b} ;
+   inputButtonList[33].eval = (a,b) => {return b/a} ;
    inputButtonList[34].eval = (a,b) => {return b**a} ; // needs to be tested due to right asccoiactivity etc
   
   this.getInputButtonViaId = function(id) {
@@ -183,7 +183,7 @@ Object.assign(inputButtonOperand.prototype, new inputButtonPrototype()) ;
 
 
 function memoryStack () {
-  var size = 20 ;
+  var size = 50 ;
   var stack = [] ;
   var top = 0 ;
   this.push = function (key) {
@@ -219,7 +219,7 @@ function memoryStack () {
 }
 
 function lineEquation () {
-  var size = 20 ;
+  var size = 50 ;
   var stack = [] ;
   var top = 0 ;
   this.push = function (key) {
@@ -256,11 +256,9 @@ function lineEquation () {
       //window.alert("underflow")
        str = "underflow" ;
     } 
-    for (let i = 0 ; i<= stack.length -1 ;i++) {
-      console.log(stack[i]) ; 
-    }
     return str ;
   }
+  
   this.count = function(id) {
     let counter = 0 ;
     for (let i = 0 ; i<= top-1 ; i++) {
@@ -269,6 +267,16 @@ function lineEquation () {
       }
     }
     return counter ;
+  }
+  this.graphValidation = function() {
+   let valid  = true ;
+   if (this.count("(")  != this.count(")")) {
+     valid = false ;
+   }
+   else if ((isNaN(stack[top-1])) && stack[top-1] != ")") {
+     valid = false ;
+   } 
+  return valid ;
   }
   this.precedence = function(symbol) {
     //check for unary operator using inputbutton list 
@@ -344,7 +352,7 @@ function lineEquation () {
       else if (currSymObj instanceof inputButtonOperator && currSym != ")") {
         console.log("is operator!") ;
         console.log("symbolStacktop:" + symbolStack.getTop()) ;
-        while (symbolStack.getTop() != "(" && symbolStack.getTop() != "underflow" && (this.associativity(currSym) == "left" && this.precedence(symbolStack.getTop()) > this.precedence(currSym) || this.associativity(currSym) == "right" && this.precedence(symbolStack.getTop()) >= this.precedence(currSym))) {
+        while (symbolStack.getTop() != "(" && symbolStack.getTop() != "underflow" && (this.associativity(currSym) == "left" && this.precedence(symbolStack.getTop()) > this.precedence(currSym) || this.associativity(currSym) == "right" && this.precedence(symbolStack.getTop()) > this.precedence(currSym))) {
           postfix.push(symbolStack.pop()) ;
         }
       symbolStack.push(currSym) ; // push operator to top of stack
@@ -366,12 +374,13 @@ function lineEquation () {
     for (let i = 0 ; i <= postfix.length ; i++) {
       console.log("postfix"+ i + postfix[i]) ;
     }
+    //window.alert(postfix) ;
     return postfix ;
   }
   this.evalEq = function(x) { // x is type Number 
     // assumes equation is valid
     var postfix = this.convInfixToPostfix() ;
-    window.alert(postfix) ;
+    //window.alert(postfix) ;
     var operandStack = new memoryStack() ;
     var inputBtns  = new inputButtonList() ;
     let i = 0 ;
@@ -404,7 +413,7 @@ function lineEquation () {
       }
       i++ ;
     }
-    window.alert("EVAL:" + operandStack.getTop())
+    //window.alert("EVAL:" + operandStack.getTop())
     return operandStack.getTop() ; // the final value in stack will be the number
   }
   
@@ -576,7 +585,12 @@ function lineList () {
     return list[currentLine] ;
   }
   this.getLineViaIndex = function (index) {
-     return list[index] ;
+    if (index >= 0 && index < length){
+       return list[index] ;
+    }
+    else {
+      return "out of range" ;
+    }
   }
   this.setLine = function(val) {
      // used for lineNumber buttons that first appear in stage 2
@@ -663,10 +677,130 @@ function cycle (e) {
     operandsTable.style.display = "none" ;
     }
 }
+function graph (id) {
+  var scale = 1 ;
+  var height = 0 ;
+  var width = 0 ;
+  var lastXpoint = 0 ;// change to negative width
+  var lastYpoint = 0 ;// change to negative height
+  var canvas = document.getElementById(id) ;
+  var ctx = canvas.getContext("2d") ;
+  var xIncrement = 100 // subject to change
+  var minZoom = 10 * xIncrement // subject to change
+  var maxZoom = 1000000 // subject to change
+  var scale = 1 ;
+  
+  
+  this.setHeight = function(val) {
+    //height = document.getElementById("domainInp").value ; // Number
+    height = val ;
+    canvas.height = height ;
+  }
+  this.setWidth = function(val) {
+    //width = document.getElementById("domainInp").value ; // Number
+    width = val ;
+    canvas.width = width ;
+    // do i need to do ctx.translate again here? 
+    //probably?
+    //test soon
+  }
+  this.setColour = function (colour) {
+    ctx.strokeStyle = colour;  
+  }
+  this.drawLineToPoint = function (yVal) {
+    if (isFinite(yVal)) {
+      ctx.beginPath() ;
+      ctx.moveTo(lastXpoint, lastYpoint) ;
+      lastXpoint += xIncrement ;
+      lastYpoint = yVal ;
+      console.log(lastXpoint) ;
+      console.log(lastYpoint) ;
+      ctx.lineTo(lastXpoint, -lastYpoint) ; // y values are negative because graph for y cords are opposite 
+      ctx.stroke() ;
+    }
+  }
+  this.axis = function () {
+    console.log("drawing") ;
+    ctx.translate(canvas.width/2, canvas.height/2) 
+    lastXpoint = -canvas.width/(2*scale)
+    lastYpoint = 0 ;
+    console.log("width:"+ canvas.width) ;
+    console.log("height:"+canvas.height) ;
+    console.log(canvas.style.height) ;
+    console.log(canvas.style.height) ;
+  
+    ctx.beginPath() ;
+    ctx.strokeStyle = "black" ; 
+    ctx.moveTo(0,0) ;
+    ctx.lineTo(0,-(canvas.height/2)) ;
+    ctx.moveTo(0,0) ;
+    ctx.lineTo(0,(canvas.height/2)) ;
+    ctx.moveTo(0,0) ;
+    ctx.lineTo(canvas.width/(2),0) ;
+    ctx.moveTo(0,0) ;
+    ctx.lineTo(-canvas.width/(2),0) ;
+    ctx.moveTo(-canvas.width/(2),0) ;
+    ctx.stroke() ;
+    window.alert("axis") ;
+  }
+  this.setZoom = function (val) {
+    canvas.width = canvas.width // clearing the canvas
+    ctx.translate(canvas.width/2, canvas.height/2) //  good
+    if (scale + val < 0.2){
+      window.alert("scale too large") ;
+    }
+    else {
+      document.getElementById("domainInp").innerHTML = "XY Domain(+-):" + canvas.width/(2*scale)
+      scale += val
+      ctx.scale(scale,scale) ; // scaling canvas
+      this.axis() ;
+    }
+    
+    this.drawGraph(lines) ; // stage 6
+  }
+  this.drawGraph = function(lineList) {
+    lastXpoint = -canvas.width ;
+    lastYPoint = 0 ;
+    this.axis() ;
+    let currLineIndex = 0 ;
+    while (lineList.getLineViaIndex(currLineIndex) != "out of range") {
+      window.alert(currLineIndex) ;
+      var currLine = lineList.getLineViaIndex(currLineIndex) ;
+      var currEq = currLine.getEquation() ;
+      window.alert(currEq) ;
+      currEq.display() ;
+      window.alert(currLine.getGraph()) ;
+      window.alert(currEq.graphValidation()) ;
+      if (currLine.getGraph() && currEq.graphValidation()) {
+        this.setColour(currLine.getColour()) ;
+        for (let i = -canvas.width; i < canvas.width ; i+=xIncrement) {
+            let y = currEq.evalEq(i) ;
+            //console.log(y) ;
+            this.drawLineToPoint(y) ;
+        }
+      }
+    currLineIndex++ ;
+    }
+  }
+  this.getIncrement = function() {
+    return xIncrement ;
+  }
+  this.resetZoom = function() {
+    canvas.width = canvas.width
+    ctx.translate(canvas.width/2, canvas.height/2) ;
+    //ctx.scale(1/scale,1/scale) ;
+    scale = 1 ;
+    this.axis() ;
+    document.getElementById("domainInp").innerHTML = "XY Domain(+-):" + canvas.width/(2*scale) ;
+    //drawGraph()
+  }
+}
+
 function input (e) {
     lines.getLine().getEquation().validate(inputButtons.getInputButtonViaId(e.target.id),lines.getEquObj()) ;
 }
 /* ----------- SOME EVENT HANDLERS ------------ */
+
 function lineNumber (e) {
   //console.log("hello") ;
   //console.log(e.target.innerHTML) ;
@@ -687,8 +821,7 @@ function lineNumber (e) {
   //console.log("lineNumber:" + newLineNumber) ;
   lines.setLine(newLineNumber) ;
   lines.display() ;
-  window.alert(lines.getLine().getEquation().evalEq(1)) ;
-  
+  window.alert(lines.getLine().getEquation().evalEq(1.0005)) ;
 }
 
 function CycleColour(e) {
@@ -844,71 +977,7 @@ function insert () {
     else { // line number default for every other line
       lastRow.children[0].children[0].style.backgroundColor = "grey" ;
     }
-  }
-  
-}
-function stage1Testing () {
-  // each test should be run seperate from eachother and each test should use the testLineList and their contents if needed
-
-  const testLineList = new lineList() ;
-  testLineList.addLine() ; // each line gets it's lineEquation stored in the attribute "equation" when instantiated
-  testLineList.addLine() ;
-  testLineList.addLine() ;
-  testLineList.addLine() ;
-  testLineList.addLine() ;
-  testLineList.addLine() ;
-  testLineList.addLine() ;
-  testLineList.addLine() ;
-  const testLine1 = testLineList.getLine() ; // line in index 0
-  const testEquation1 = testLine1.getEquation() ; // equation of line in index 0
-
-  //test 1
-  testLineList.addLine() ; // hopefully not allowed since max No. of lines is 8
-  //works - alert is shown 
-
-  //test2 
-  console.log(testLine1.getColour()) ; // colours[0] == "#FFFFFF" - default 
-  testLine1.setColour()
-  console.log(testLine1.getColour()) ; // colours[1] == "#FFFF00"
-  for (let i = 1 ; i <= 7 ; i++){
-    testLine1.setColour() ;
-  }
-  console.log(testLine1.getColour()) ;
-  //works apart from syntax error in array (accidentally too many commas from copy paste)
-
-  //test3 
-  console.log(testLine1.getGraph()) ; // false - default 
-  testLine1.setGraph() ;
-  console.log(testLine1.getGraph()) ; // true 
-
-  console.log(testLine1.getGradientGraph()) ; // false - default
-  testLine1.setGradientGraph() ;
-  console.log(testLine1.getGradientGraph()) ; // true 
-  // works - had a syntax error of misspelling gradient
-  // code was making a new variable rather than updating the existing attribute 
-
-  //test 4 and 5 are ommitted since I chose to not use parameters and as shown in the second mistake outlined in the iterative testing
-
-  //test 6
-  testEquation1.push("a") ;
-  testEquation1.push("b") ;
-  testEquation1.push("c") ;
-  testEquation1.push("d") ;
-  testEquation1.push("e") ;
-  testEquation1.pop() ; // d
-  testEquation1.pop() ; // e
-  testEquation1.display() ; // ["a" ,"b" , "c"]
-  // works perfect - correct values are popped and correct values are displayed in the correct order! 
-
-  //test 7 
-  testEquation1.pop() ;
-  for (let i = 0 ; i<= 20 ; i++) {
-       testEquation1.push(i.toString()) ; // 0,1,2,3...19 and then 20 is ignored due to overflow 
-
-  } 
-  testEquation1.display() ;
-  // works - underflow is prevented and all pushes are made except the last one which would cause an overflow
-
+  }  
 }
 function preventFloats (e) {
     if (e.keyCode == 190) { // keycode for .
@@ -935,14 +1004,14 @@ function MaxDomain (e) {
 }
 window.onload = jsOnload ;
 function jsOnload () {
-  
+   document.getElementById("graph").onwheel = function() { return false ;}
    const cycleButtons = document.getElementsByClassName("cycleButton") ;
   for (let i =0 ; i < cycleButtons.length ; i++) {
       cycleButtons[i].addEventListener("click" , cycle) ;
   }  
-  const inputButtons = document.getElementsByClassName("inputButton") ;
-  for (let i =0 ; i < inputButtons.length ; i++) {
-      inputButtons[i].addEventListener("click" , input) ;
+  const inputButtonIds = document.getElementsByClassName("inputButton") ;
+  for (let i =0 ; i < inputButtonIds.length ; i++) {
+      inputButtonIds[i].addEventListener("click" , input) ;
   }  
   const lineNumberButtons = document.getElementsByClassName("lineNumber") ;
   for (let i =0 ; i < lineNumberButtons.length ; i++) {
@@ -952,13 +1021,55 @@ function jsOnload () {
   insertBtn.addEventListener("click" , insert) ;
   insert() ;
   const xDomainBtn = document.getElementById("domainInp") ;
-  xDomainBtn.addEventListener("keydown", preventStrings) ;
-  xDomainBtn.addEventListener("keydown", preventFloats) ;
-  xDomainBtn.addEventListener("keydown", MaxDomain) ;
+  //xDomainBtn.addEventListener("keydown", preventStrings) ;
+  //xDomainBtn.addEventListener("keydown", preventFloats) ;
+  //xDomainBtn.addEventListener("keydown", MaxDomain) ;
+
+  
+  const canvasGraph = new graph("graph") ;
+
+  document.getElementById("graph").addEventListener("click" , () => { 
+    console.log("scaled") ;
+    canvasGraph.axis() ;
+    canvasGraph.setZoom(0.5) ;
+    canvasGraph.drawLineToPoint(10) ;
+  }) ;
+  document.addEventListener("wheel" , (e) => {
+    let scale = 0 ;
+    const deltaY = e.deltaY
+    //console.log("Wheel event occurred")
+    //console.log(deltaY) ;
+    var inbounds = false ;
+    if (deltaY > 0)  {
+      scale = -0.2 ;
+      inbounds = true ;
+    }
+    else if (deltaY < 0) { // zoom out 
+      scale = 0.2 ;
+      inbounds = true ;
+    }
+    //console.log(inbounds) ;
+    if (inbounds) {
+      canvasGraph.axis() ;
+      canvasGraph.setZoom(scale)
+      canvasGraph.drawLineToPoint(200) ;
+      console.log(scale) ;
+      //e.stopPropagation() ;
+    }
+  }) ;
+  document.getElementById("home").addEventListener("click" , (e) =>{canvasGraph.resetZoom() ;});
+   document.getElementById("calc").addEventListener("click" , (e) =>{
+     canvasGraph.drawGraph(lines) ;
+   });
+  canvasGraph.setHeight(3000) ;
+  canvasGraph.setWidth(3000) ;
+  canvasGraph.axis() ;
+  canvasGraph.setColour("#FF7766") ;
 }
 const lines = new lineList () ;
 const inputButtons = new inputButtonList() ;
 
 lines.setLine(0) ;
+
 
 
