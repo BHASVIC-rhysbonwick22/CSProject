@@ -170,6 +170,7 @@ function inputButtonList() {
     }
     //console.log(inputButtonList[x]) ;
     if (id == inputButtonList[x].getId() ) {
+      //console.log(inputButtonList[x]) ;
       return inputButtonList[x] ;
     }
     else {
@@ -270,10 +271,11 @@ function lineEquation () {
   }
   this.graphValidation = function() {
    let valid  = true ;
+    console.log("kasdka:" +  inputButtons.getInputButtonViaId(stack[top-1]) instanceof inputButtonOperand) ;
    if (this.count("(")  != this.count(")")) {
      valid = false ;
    }
-   else if ((isNaN(stack[top-1])) && stack[top-1] != ")") {
+   else if (isNaN(stack[top-1]) && stack[top-1] != ")"&& !(inputButtons.getInputButtonViaId(stack[top-1]) instanceof inputButtonOperand)) {
      valid = false ;
    } 
   return valid ;
@@ -320,11 +322,11 @@ function lineEquation () {
     const inputbuttons = new inputButtonList() ;
     const equation = [...stack] // copy of stack not by refrence
     for (let i = 0 ; i <=equation.length -1 ; i++) {
-      console.log("i:"+ i) ;
+      //console.log("i:"+ i) ;
       var currSym = equation[i] ;
-      console.log("CurrSym:" + currSym) ;
+      //console.log("CurrSym:" + currSym) ;
       var currSymObj = inputbuttons.getInputButtonViaId(currSym) ;
-      console.log(currSymObj instanceof inputButtonOperand) ;
+      //console.log(currSymObj instanceof inputButtonOperand) ;
       if (currSymObj.getId() == "num") {
         let num = currSym ;
         postfix.push(num) ;
@@ -333,25 +335,25 @@ function lineEquation () {
         postfix.push(currSym) ;
       }
       else if (currSym == "(") {
-        console.log("bracket found and then added to postfix") ;
+        //console.log("bracket found and then added to postfix") ;
         symbolStack.push(currSym) ;
-        console.log("stack top:" + symbolStack.getTop()) ;
+        //console.log("stack top:" + symbolStack.getTop()) ;
       }
       else if (currSym == ")") {
         let x = postfix.length ;
         while ( symbolStack.getTop() != "(") {
           let y = symbolStack.pop() ;
-          console.log(y) ;
+          //console.log(y) ;
           postfix[x] = y ;
           x++ ;
-          console.log("x var:" , + x) ;
+          //console.log("x var:" , + x) ;
         }
         symbolStack.pop() ; 
 
       } 
       else if (currSymObj instanceof inputButtonOperator && currSym != ")") {
-        console.log("is operator!") ;
-        console.log("symbolStacktop:" + symbolStack.getTop()) ;
+        //console.log("is operator!") ;
+        //console.log("symbolStacktop:" + symbolStack.getTop()) ;
         while (symbolStack.getTop() != "(" && symbolStack.getTop() != "underflow" && (this.associativity(currSym) == "left" && this.precedence(symbolStack.getTop()) > this.precedence(currSym) || this.associativity(currSym) == "right" && this.precedence(symbolStack.getTop()) > this.precedence(currSym))) {
           postfix.push(symbolStack.pop()) ;
         }
@@ -359,8 +361,8 @@ function lineEquation () {
       }
     }
     
-     console.log("symbolStacktop: after operator added" + symbolStack.getTop()) ;
-    console.log("symbolStackLength:" + symbolStack.getLength()) ;
+     //console.log("symbolStacktop: after operator added" + symbolStack.getTop()) ;
+    //console.log("symbolStackLength:" + symbolStack.getLength()) ;
 
     
     var temp = symbolStack.pop() ;
@@ -377,9 +379,9 @@ function lineEquation () {
     //window.alert(postfix) ;
     return postfix ;
   }
-  this.evalEq = function(x) { // x is type Number 
+  this.evalEq = function(expression ,x) { // x is type Number 
     // assumes equation is valid
-    var postfix = this.convInfixToPostfix() ;
+    var postfix = expression ;
     //window.alert(postfix) ;
     var operandStack = new memoryStack() ;
     var inputBtns  = new inputButtonList() ;
@@ -503,11 +505,11 @@ function lineEquation () {
       }
     }
     else if (inputBtnObj instanceof inputButtonOperator && inputBtnObj.getType() == "unary") { // unary operator validation
-      if (lastType != "operand" || top == 0 ) {
+      if ((lastType != "operand" && lastType != ")") || top == 0 ) {
         isValid = true ;
       }
       else {
-        window.alert("you cannot have a unary operator after an operand") ;
+        window.alert("you cannot have a unary operator after an operand or closed bracket") ;
       }
     }
 
@@ -613,7 +615,7 @@ function lineList () {
 
 
 function line () {
-  var colour = "#FFFFFF" ;
+  var colour = "#AAAAAA" ;
   var equation = new lineEquation () ;
   var isGraphed = false ;
   var isGradientGraphed = false ; 
@@ -625,7 +627,7 @@ function line () {
   this.setColour = function() {
    
     // No.colours = max number of lines = 8 
-    let colours = ["#FFFFFF","#0000FF", "#FF0000", "#008000", "#FFFF00", "#FFC0CB","#800080","#FFA500"] ; 
+    let colours = ["#AAAAAA","#0000FF", "#FF0000", "#008000", "#FFFF00", "#FFC0CB","#800080","#FFA500"] ; 
     //cycle: white blue red green yellow pink purple orange 
     let x = 0 ;
     while (colours[x] != colour) { // linear search
@@ -685,10 +687,11 @@ function graph (id) {
   var lastYpoint = 0 ;// change to negative height
   var canvas = document.getElementById(id) ;
   var ctx = canvas.getContext("2d") ;
-  var xIncrement = 100 // subject to change
+  var xIncrement = 0.1 // subject to change
   var minZoom = 10 * xIncrement // subject to change
   var maxZoom = 1000000 // subject to change
   var scale = 1 ;
+  var validPoint = true ;
   
   
   this.setHeight = function(val) {
@@ -708,24 +711,48 @@ function graph (id) {
     ctx.strokeStyle = colour;  
   }
   this.drawLineToPoint = function (yVal) {
-    if (isFinite(yVal)) {
+    if (yVal < canvas.height/(2*scale) && yVal > -canvas.height/(2*scale) && validPoint == true) {
       ctx.beginPath() ;
-      ctx.moveTo(lastXpoint, lastYpoint) ;
-      lastXpoint += xIncrement ;
+      ctx.moveTo(lastXpoint, -lastYpoint) ;
+      lastXpoint += xIncrement/scale ;
       lastYpoint = yVal ;
-      console.log(lastXpoint) ;
-      console.log(lastYpoint) ;
+      //console.log("xdrawto:"+lastXpoint) ;
+      //console.log("ydrawto"+lastYpoint) ;
       ctx.lineTo(lastXpoint, -lastYpoint) ; // y values are negative because graph for y cords are opposite 
       ctx.stroke() ;
     }
+    else if (yVal < canvas.height/(2*scale) && yVal > -canvas.height/(2*scale) && validPoint == false) {
+      ctx.beginPath() ;
+
+      lastXpoint += xIncrement/scale ;
+      lastYpoint = yVal ;
+      ctx.moveTo(lastXpoint, -lastYpoint) ;
+
+      //console.log("xdrawto:"+lastXpoint) ;
+      //console.log("ydrawto"+lastYpoint) ;
+
+      ctx.stroke() ;
+      validPoint = true ;
+
+      }
+    else {
+      validPoint = false 
+      lastXpoint += xIncrement/scale ;
+      lastYpoint = yVal ;
+      ctx.beginPath() ;
+      ctx.moveTo(lastXpoint, -lastYpoint) ;
+    }
+   
   }
   this.axis = function () {
-    console.log("drawing") ;
-    ctx.translate(canvas.width/2, canvas.height/2) 
+    //console.log("drawing") ;
+    canvas.width = canvas.width // clearing the canvas
+    ctx.translate(canvas.width/2, canvas.height/2) //  good
+    ctx.scale(scale,scale) ;
     lastXpoint = -canvas.width/(2*scale)
     lastYpoint = 0 ;
-    console.log("width:"+ canvas.width) ;
-    console.log("height:"+canvas.height) ;
+    //console.log("width:"+ canvas.width) ;
+    //console.log("height:"+canvas.height) ;
     console.log(canvas.style.height) ;
     console.log(canvas.style.height) ;
   
@@ -741,7 +768,7 @@ function graph (id) {
     ctx.lineTo(-canvas.width/(2),0) ;
     ctx.moveTo(-canvas.width/(2),0) ;
     ctx.stroke() ;
-    window.alert("axis") ;
+    //window.alert("axis") ;
   }
   this.setZoom = function (val) {
     canvas.width = canvas.width // clearing the canvas
@@ -750,33 +777,39 @@ function graph (id) {
       window.alert("scale too large") ;
     }
     else {
-      document.getElementById("domainInp").innerHTML = "XY Domain(+-):" + canvas.width/(2*scale)
+      document.getElementById("domainInp").innerHTML = "XY Domain(+-):" + canvas.width/2/scale**2;
       scale += val
-      ctx.scale(scale,scale) ; // scaling canvas
+      //ctx.scale(scale,scale) ; // scaling canvas
       this.axis() ;
     }
     
     this.drawGraph(lines) ; // stage 6
   }
   this.drawGraph = function(lineList) {
+    this.axis()  ;
     lastXpoint = -canvas.width ;
-    lastYPoint = 0 ;
-    this.axis() ;
+    lastYpoint = 0 ;
+    this.axis()  ;
     let currLineIndex = 0 ;
     while (lineList.getLineViaIndex(currLineIndex) != "out of range") {
-      window.alert(currLineIndex) ;
+      //window.alert(currLineIndex) ;
       var currLine = lineList.getLineViaIndex(currLineIndex) ;
       var currEq = currLine.getEquation() ;
-      window.alert(currEq) ;
       currEq.display() ;
-      window.alert(currLine.getGraph()) ;
-      window.alert(currEq.graphValidation()) ;
+      //window.alert(currLine.getGraph()) ;
+      //window.alert(currEq.graphValidation()) ;
       if (currLine.getGraph() && currEq.graphValidation()) {
         this.setColour(currLine.getColour()) ;
-        for (let i = -canvas.width; i < canvas.width ; i+=xIncrement) {
-            let y = currEq.evalEq(i) ;
-            //console.log(y) ;
-            this.drawLineToPoint(y) ;
+        let postfixExpression = currEq.convInfixToPostfix()
+        for (let i = -canvas.width/2/scale; i < canvas.width/2 ; i+=xIncrement/scale) {
+            let y = currEq.evalEq(postfixExpression ,i/scale) ;
+            //console.log("i/scale:" + i/scale)
+          if (i == -canvas.width/2/scale) { // makes sure first point is moved to but no line is drawn
+            lastXpoint += xIncrement/scale ;
+            lastYpoint = y*scale ;
+            ctx.moveTo(lastXpoint ,lastYpoint) ;
+          }
+            this.drawLineToPoint(y*scale) ;
         }
       }
     currLineIndex++ ;
@@ -791,7 +824,7 @@ function graph (id) {
     //ctx.scale(1/scale,1/scale) ;
     scale = 1 ;
     this.axis() ;
-    document.getElementById("domainInp").innerHTML = "XY Domain(+-):" + canvas.width/(2*scale) ;
+    document.getElementById("domainInp").innerHTML = "XY Domain(+-):" + canvas.width/(2/(scale**2)) ;
     //drawGraph()
   }
 }
@@ -821,7 +854,9 @@ function lineNumber (e) {
   //console.log("lineNumber:" + newLineNumber) ;
   lines.setLine(newLineNumber) ;
   lines.display() ;
-  window.alert(lines.getLine().getEquation().evalEq(1.0005)) ;
+  let expression = lines.getLine().getEquation().convInfixToPostfix()
+  window.alert(expression) ;
+  window.alert(lines.getLine().getEquation().evalEq(expression,4500)) ;
 }
 
 function CycleColour(e) {
@@ -1029,9 +1064,9 @@ function jsOnload () {
   const canvasGraph = new graph("graph") ;
 
   document.getElementById("graph").addEventListener("click" , () => { 
-    console.log("scaled") ;
+    //console.log("scaled") ;
     canvasGraph.axis() ;
-    canvasGraph.setZoom(0.5) ;
+    canvasGraph.setZoom(50) ;
     canvasGraph.drawLineToPoint(10) ;
   }) ;
   document.addEventListener("wheel" , (e) => {
@@ -1052,8 +1087,8 @@ function jsOnload () {
     if (inbounds) {
       canvasGraph.axis() ;
       canvasGraph.setZoom(scale)
-      canvasGraph.drawLineToPoint(200) ;
-      console.log(scale) ;
+    
+      //console.log(scale) ;
       //e.stopPropagation() ;
     }
   }) ;
@@ -1064,7 +1099,10 @@ function jsOnload () {
   canvasGraph.setHeight(3000) ;
   canvasGraph.setWidth(3000) ;
   canvasGraph.axis() ;
-  canvasGraph.setColour("#FF7766") ;
+  //canvasGraph.setColour("#FF7766") ;
+  //canvasGraph.drawLineToPoint(200) ;
+  //canvasGraph.drawLineToPoint(-1000) ;
+  //canvasGraph.drawLineToPoint(200) ;
 }
 const lines = new lineList () ;
 const inputButtons = new inputButtonList() ;
