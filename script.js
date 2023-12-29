@@ -687,7 +687,7 @@ function graph (id) {
   var lastYpoint = 0 ;// change to negative height
   var canvas = document.getElementById(id) ;
   var ctx = canvas.getContext("2d") ;
-  var xIncrement = 0.1 // subject to change
+  var xIncrement = 0.1// subject to change
   var minZoom = 10 * xIncrement // subject to change
   var maxZoom = 1000000 // subject to change
   var scale = 1 ;
@@ -1092,7 +1092,10 @@ function jsOnload () {
       //e.stopPropagation() ;
     }
   }) ;
-  document.getElementById("home").addEventListener("click" , (e) =>{canvasGraph.resetZoom() ;});
+  document.getElementById("home").addEventListener("click" , (e) =>{
+    canvasGraph.resetZoom() ;
+    canvasGraph.drawGraph(lines)
+  });
    document.getElementById("calc").addEventListener("click" , (e) =>{
      canvasGraph.drawGraph(lines) ;
    });
