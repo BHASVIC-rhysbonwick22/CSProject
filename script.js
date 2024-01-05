@@ -598,6 +598,12 @@ function lineList () {
      // used for lineNumber buttons that first appear in stage 2
     // note that currentLine also gets changed in delete line in some cases since the index of the line changes
     currentLine = val ;
+    var numDisplay = document.getElementsByClassName("lineNumDisplay") ;
+    var num = document.getElementById("lines").rows[currentLine].children[0] ;
+    console.log(numDisplay[0]) 
+    for (let i = 0 ; i< numDisplay.length; i++) {
+      numDisplay[i].innerHTML = "L" + num.children[0].innerHTML;
+    }
   }
   this.display = function () { // only for testing
     for (let i = 0 ; i < length ; i++) {
@@ -618,9 +624,18 @@ function line () {
   var colour = "#AAAAAA" ;
   var equation = new lineEquation () ;
   var isGraphed = false ;
-  var isGradientGraphed = false ; 
-  
-  
+  var isGradientGraphed = false ;
+  var xPoints = [] ;
+  var intervals = [] ;
+  this.clearIntervals = function() {
+    intervals = [] ;
+  }
+  this.getIntervals = function() {
+    return intervals ;
+  }
+  this.addInterval = function(array) {
+    intervals.push(array) ;
+  }
   this.getColour = function() {
     return colour ;
   }
@@ -657,6 +672,15 @@ function line () {
   this.getEquation = function() {
     return equation ;
   }
+  this.clearPoints = function() {
+    xPoints.length = 0 ;
+  }
+  this.addPoint = function(xVal) {
+    xPoints.push(xVal) ;
+  }
+  this.getPoints = function() {
+    return [...xPoints] ;
+  }
 }
 
 function cycle (e) {
@@ -687,7 +711,7 @@ function graph (id) {
   var lastYpoint = 0 ;// change to negative height
   var canvas = document.getElementById(id) ;
   var ctx = canvas.getContext("2d") ;
-  var xIncrement = 0.1// subject to change
+  var xIncrement = 0.01// subject to change
   var minZoom = 10 * xIncrement // subject to change
   var maxZoom = 1000000 // subject to change
   var scale = 1 ;
@@ -787,34 +811,91 @@ function graph (id) {
   }
   this.drawGraph = function(lineList) {
     this.axis()  ;
-    lastXpoint = -canvas.width ;
+    lastXpoint = -canvas.width/2;
     lastYpoint = 0 ;
     this.axis()  ;
     let currLineIndex = 0 ;
+    
     while (lineList.getLineViaIndex(currLineIndex) != "out of range") {
       //window.alert(currLineIndex) ;
+      lastXpoint = -canvas.width/2/scale ;
+      lastYpoint = 0 ;
       var currLine = lineList.getLineViaIndex(currLineIndex) ;
       var currEq = currLine.getEquation() ;
+      currLine.clearPoints() ;
+      currLine.clearIntervals() ;
       currEq.display() ;
+      var postfixExpression = currEq.convInfixToPostfix()
       //window.alert(currLine.getGraph()) ;
       //window.alert(currEq.graphValidation()) ;
       if (currLine.getGraph() && currEq.graphValidation()) {
         this.setColour(currLine.getColour()) ;
         let postfixExpression = currEq.convInfixToPostfix()
-        for (let i = -canvas.width/2/scale; i < canvas.width/2 ; i+=xIncrement/scale) {
+        for (let i = -canvas.width/2/scale; i <= canvas.width/2 ; i+=xIncrement/scale) {
             let y = currEq.evalEq(postfixExpression ,i/scale) ;
             //console.log("i/scale:" + i/scale)
+          if ((lastYpoint > 0 && y < 0) || (lastYpoint < 0 || y > 0)) {
+             let temp = [lastXpoint,lastXpoint + xIncrement/scale] ;
+            currLine.addInterval(temp) ;
+          }   
+          
           if (i == -canvas.width/2/scale) { // makes sure first point is moved to but no line is drawn
-            lastXpoint += xIncrement/scale ;
-            lastYpoint = y*scale ;
-            ctx.moveTo(lastXpoint ,lastYpoint) ;
-          }
+              lastXpoint += xIncrement/scale ;
+              lastYpoint = y*scale ;
+              ctx.moveTo(lastXpoint ,lastYpoint) ;
+            }
+            currLine.addPoint(y*scale) ;
             this.drawLineToPoint(y*scale) ;
         }
       }
+      if (currLine.getGradientGraph()) {
+        //window.alert("GRAIDENT") ;
+        ctx.globalAlpha = 0.5 ;
+        lastXpoint = -canvas.width/2/scale ;
+        lastYpoint = 0 ;
+        let xPoints = currLine.getPoints() ;
+        //window.alert(xPoints.length) ;
+        for (let i = -canvas.width/2/scale; i <= canvas.width/2 ; i+=xIncrement/scale) {
+          let newY = (currEq.evalEq(postfixExpression ,i/scale+xIncrement/scale)- currEq.evalEq(postfixExpression ,i/scale))/(xIncrement/scale);
+          //
+          this.drawLineToPoint(newY*scale) ;
+        } 
+      ctx.globalAlpha = 1 ;  
+      }
     currLineIndex++ ;
     }
-  }
+    if (lineList.getLine().getGraph()) {
+      let selectedLine = lineList.getLine() ;
+      let eq = selectedLine.getEquation() ;
+      let intervals = selectedLine.getIntervals() ;
+      let index  = 0 
+      while (eq.evalEq(intervals[index][0]).toFixed(6) != eq.evalEq(intervals[index][1]).toFixed(6)) {
+        let middleIndex  = (a+b)/2 ;
+        let middle = eq.evalEq(middleIndex)
+        if (middle > 0) {
+          if (eq.evalEq(intervals[index][0]).toFixed(6) > 0) {
+            a = middle ;
+          }
+          else {
+            b = middle
+          }
+        }
+        else {
+          if (eq.evalEq(intervals[index][0]).toFixed(6) > 0) {
+            b = middle ;
+          }
+          else {
+             a = middle ;
+          }
+        }  
+      index++ ;  
+      }
+      console.log(a) ;
+    } 
+  } 
+    
+    
+  
   this.getIncrement = function() {
     return xIncrement ;
   }
@@ -854,9 +935,10 @@ function lineNumber (e) {
   //console.log("lineNumber:" + newLineNumber) ;
   lines.setLine(newLineNumber) ;
   lines.display() ;
-  let expression = lines.getLine().getEquation().convInfixToPostfix()
-  window.alert(expression) ;
-  window.alert(lines.getLine().getEquation().evalEq(expression,4500)) ;
+  
+  //let expression = lines.getLine().getEquation().convInfixToPostfix() ;
+  //window.alert(expression) ;
+  //window.alert(lines.getLine().getEquation().evalEq(expression,4500)) ;
 }
 
 function CycleColour(e) {
@@ -864,7 +946,7 @@ function CycleColour(e) {
   //console.log("line index:") ;
   //console.log(e.target.parentElement.parentElement.rowIndex) ; 
   let lineIndex = e.target.parentElement.parentElement.rowIndex ;
-  let line = lines.getLineViaIndex(lineIndex)  
+  let line = lines.getLineViaIndex(lineIndex)  ;
   line.setColour() ;
   e.target.style.backgroundColor = line.getColour() ;  
 }
@@ -899,14 +981,14 @@ function backspace(e) {
   var display = e.target.parentElement.parentElement.children[1].innerHTML ;
   //console.log(display) ;
   var buttonList =  new inputButtonList() ;
-  var popped = line.getEquation().pop() // stack updated
+  var popped = line.getEquation().pop() ; // stack updated
   window.alert("popped" + popped) ;
   poppedList = popped.split("") ;
   if (popped == "underflow") {
     window.alert("equation is empty") ;
   }
   else  if (poppedList[0] == "(" && poppedList.length > 1) { // if last thing was a bracket then also remove the unary operator if there is one before it 
-    var temp = popped.replace("(","")
+    var temp = popped.replace("(","") ;
     var poppedButton = buttonList.getInputButtonViaId(temp) ;
     var poppedDisplay = poppedButton.getDisplay() ;
     popped = poppedDisplay + "("  ;
@@ -946,7 +1028,7 @@ function backspace(e) {
   console.log("Popped value:" + popped) ;
   //console.log("pop return" + popped) ;
   // if we reverse both the substring and the orginal string the String.replace() method will remove the last occurrence of that substring in the orignal string if we then reverse the orignal string after
-  temp = display.split("").reverse().join("") // reversed string
+  temp = display.split("").reverse().join("") ;// reversed string
   popped = popped.split("").reverse().join("") ; // reversed substring
   temp = temp.replace(popped, "") // Rempove reversed string from reversed display
   let newDisplay = temp.split("").reverse().join("") ; // changing back string to original way round
@@ -1033,7 +1115,7 @@ function MaxDomain (e) {
   //window.alert(upperLimit) ;
   //window.alert(currNum) ;
   if (currNum > upperLimit) {// upperLimit
-    window.alert("upper limit reached")
+    window.alert("upper limit reached") ;
     event.preventDefault() ;// deprecated 
   } 
 }
@@ -1106,11 +1188,12 @@ function jsOnload () {
   //canvasGraph.drawLineToPoint(200) ;
   //canvasGraph.drawLineToPoint(-1000) ;
   //canvasGraph.drawLineToPoint(200) ;
+  lines.setLine(0) ; // needs to be here because it edits all elements that display the current Line
+
 }
 const lines = new lineList () ;
 const inputButtons = new inputButtonList() ;
 
-lines.setLine(0) ;
 
 
 

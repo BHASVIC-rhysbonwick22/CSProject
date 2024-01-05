@@ -53,9 +53,8 @@ h3 {
 }
 
 p {
-  font-size: 25px;
+  font-size: 10px;
   font-family: 'Times New Roman', Times, serif;
-  margin-left: 25px;
 
 }
 
@@ -78,11 +77,12 @@ table {
 
 }
 td{
-  font-size: 5% ;
+  font-size: 3vw ;
   background-color: #606060 ;
   border: 1px solid #FFFFFF ;
 }
 tr {
+  font-size: 5vw;
   border: 1px solid #FFFFFF ;
   background-color: #5555CC ;
 }
@@ -164,6 +164,10 @@ tr {
   width: 3000px ;
   height: 3000px ;
 }
+.lineNum {
+  font-size: 5vw ;
+}
+]
 
 .inputTable {
   width: auto ;
@@ -177,6 +181,7 @@ tr {
 }
 .inputButton {
   font-size: 1vw ;
+  width: 3vw ;
   height: 100% ;
   width: 100% ;
 }
@@ -192,4 +197,18 @@ button:hover {
 }
 #domainInp {
   font-size: 2vh ;
+}
+#rightContainer {
+  display: block ;
+  position: absolute ;
+  background-color: grey ;
+  top: 15% ;
+  left: 85% ;
+  width: 15% ;
+  height: 100% ;
+}
+station {
+  width: 100% ;
+  margin-left: auto ;
+  margin-right: auto ;
 }
