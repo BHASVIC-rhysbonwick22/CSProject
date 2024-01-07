@@ -167,7 +167,7 @@ tr {
 .lineNum {
   font-size: 5vw ;
 }
-]
+
 
 .inputTable {
   width: auto ;
@@ -181,7 +181,6 @@ tr {
 }
 .inputButton {
   font-size: 1vw ;
-  width: 3vw ;
   height: 100% ;
   width: 100% ;
 }
@@ -208,7 +207,15 @@ button:hover {
   height: 100% ;
 }
 station {
+  font-size: 3vw ;
   width: 100% ;
   margin-left: auto ;
   margin-right: auto ;
+  overflow: scroll ; 
+}
+.cord {
+    font-size: 1.5vw ;
+    width :auto ;
+    height: auto ;
+  }
 }

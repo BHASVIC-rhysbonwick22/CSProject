@@ -834,8 +834,11 @@ function graph (id) {
         for (let i = -canvas.width/2/scale; i <= canvas.width/2 ; i+=xIncrement/scale) {
             let y = currEq.evalEq(postfixExpression ,i/scale) ;
             //console.log("i/scale:" + i/scale)
-          if ((lastYpoint > 0 && y < 0) || (lastYpoint < 0 || y > 0)) {
-             let temp = [lastXpoint,lastXpoint + xIncrement/scale] ;
+          if ((lastYpoint > 0 && y < 0) || (lastYpoint < 0 && y > 0) && lastXpoint != -canvas.width/2/scale) {
+            window.alert("root found") ;
+            window.alert(lastYpoint) ;
+            window.alert(y) ;
+            let temp = [lastXpoint - 2*(xIncrement/scale),lastXpoint - xIncrement/scale] ;
             currLine.addInterval(temp) ;
           }   
           
@@ -865,32 +868,62 @@ function graph (id) {
     currLineIndex++ ;
     }
     if (lineList.getLine().getGraph()) {
-      let selectedLine = lineList.getLine() ;
-      let eq = selectedLine.getEquation() ;
-      let intervals = selectedLine.getIntervals() ;
-      let index  = 0 
-      while (eq.evalEq(intervals[index][0]).toFixed(6) != eq.evalEq(intervals[index][1]).toFixed(6)) {
-        let middleIndex  = (a+b)/2 ;
-        let middle = eq.evalEq(middleIndex)
-        if (middle > 0) {
-          if (eq.evalEq(intervals[index][0]).toFixed(6) > 0) {
-            a = middle ;
+      var selectedLine = lineList.getLine() ;
+      var eq = selectedLine.getEquation() ;
+      var intervals = selectedLine.getIntervals() ;
+      var index  = 0 ;
+      var lower  = intervals[index][0]  ;
+      var higher = intervals[index][1] ;
+       var prevMiddle = 0 ;
+      var middle = 0 ;
+      //window.alert(lower) ;
+      //window.alert(higher) ;
+      window.alert(intervals.length)
+      while (index <= intervals.length - 1) {
+        lower  = intervals[index][0] ;
+        higher = intervals[index][1] ;
+        
+        do {
+          let middleIndex  = (lower+higher)/2 ;
+          prevMiddle = middle ;
+          var middle = eq.evalEq(postfixExpression, middleIndex) ;
+          window.alert("midddle" + lower) ;
+          window.alert(" prevMiddle" + higher) ;
+          //window.alert("midddle" + middle.toFixed(6)) ;
+          //window.alert(" prevMiddle" + prevMiddle.toFixed(6)) ;
+          if (middle > 0) {
+            if (eq.evalEq(postfixExpression,lower).toFixed(7) > 0) {
+              lower = middle ;
+            }
+            else {
+              higher = middle
+            }
           }
           else {
-            b = middle
-          }
-        }
-        else {
-          if (eq.evalEq(intervals[index][0]).toFixed(6) > 0) {
-            b = middle ;
-          }
-          else {
-             a = middle ;
-          }
-        }  
-      index++ ;  
+            if (eq.evalEq(postfixExpression,lower).toFixed(7) > 0) {
+              higher = middle ;
+            }
+            else {
+               lower = middle ;
+            }
+          }     
+        } while ((middle.toFixed(7) != prevMiddle.toFixed(7))) ;
+        index++ ;
       }
-      console.log(a) ;
+      //console.log(middle.toFixed(7)) ;
+      const table = document.getElementById("station") ;
+      let lastRow = table.insertRow(table.rows.length) ;
+      lastRow.insertCell(0) ;
+      lastRow.children[0].classList.add("cord") ;
+      lastRow.children[0].innerHTML = middle.toFixed(7) ;
+
+      lastRow.insertCell(1) ;
+      lastRow.children[1].classList.add("cord") ;
+      lastRow.children[1].innerHTML = eq.evalEq(postfixExpression,middle).toFixed(7) ;
+
+
+
+      //lastRow.insertCell(eq.evalEq(postfixExpression,middle).toFixed(7)) ;
     } 
   } 
     
