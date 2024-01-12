@@ -271,7 +271,7 @@ function lineEquation () {
   }
   this.graphValidation = function() {
    let valid  = true ;
-    console.log("kasdka:" +  inputButtons.getInputButtonViaId(stack[top-1]) instanceof inputButtonOperand) ;
+    //console.log("kasdka:" +  inputButtons.getInputButtonViaId(stack[top-1]) instanceof inputButtonOperand) ;
    if (this.count("(")  != this.count(")")) {
      valid = false ;
    }
@@ -416,7 +416,13 @@ function lineEquation () {
       i++ ;
     }
     //window.alert("EVAL:" + operandStack.getTop())
-    return operandStack.getTop() ; // the final value in stack will be the number
+    let val = operandStack.getTop() ; // the final value in stack will be the number
+    if (isNaN(val)) {
+      return "undefined" ;
+    } 
+    else {
+      return val
+    }
   }
   
   this.display = function () { // only for testing
@@ -636,6 +642,7 @@ function line () {
   this.addInterval = function(array) {
     intervals.push(array) ;
   }
+  
   this.getColour = function() {
     return colour ;
   }
@@ -711,9 +718,9 @@ function graph (id) {
   var lastYpoint = 0 ;// change to negative height
   var canvas = document.getElementById(id) ;
   var ctx = canvas.getContext("2d") ;
-  var xIncrement = 0.01// subject to change
-  var minZoom = 10 * xIncrement // subject to change
-  var maxZoom = 1000000 // subject to change
+  var xIncrement = 0.01 ;// subject to change
+  var minZoom = 10 * xIncrement ;// subject to change
+  var maxZoom = 1000000 ;// subject to change
   var scale = 1 ;
   var validPoint = true ;
   
@@ -732,7 +739,7 @@ function graph (id) {
     //test soon
   }
   this.setColour = function (colour) {
-    ctx.strokeStyle = colour;  
+    ctx.strokeStyle = colour ;  
   }
   this.drawLineToPoint = function (yVal) {
     if (yVal < canvas.height/(2*scale) && yVal > -canvas.height/(2*scale) && validPoint == true) {
@@ -809,6 +816,61 @@ function graph (id) {
     
     this.drawGraph(lines) ; // stage 6
   }
+  this.displayPoints = function(postfixExpression) {
+    var selectedLine = lines.getLine() ;
+    var eq = selectedLine.getEquation() ;
+    var intervals = selectedLine.getIntervals() ;
+    var index  = 0 ;
+    var prevMiddle = 0 ;
+    var middle = 0 ;
+    //window.alert(lower) ;
+    //window.alert(higher) ;
+    window.alert(intervals.length) ;
+    while (index <= intervals.length - 1) {
+      var lower  = intervals[index][0] ;
+      var higher = intervals[index][1] ;
+
+      do {
+        var middleIndex  = (lower+higher)/2 ;
+        prevMiddle = middle ;
+        var middle = eq.evalEq(postfixExpression, middleIndex) ;
+        //window.alert("midddle" + lower) ;
+        //window.alert(" prevMiddle" + higher) ;
+        //window.alert("midddle" + middle.toFixed(6)) ;
+        //window.alert(" prevMiddle" + prevMiddle.toFixed(6)) ;
+        if (middle > 0) {
+          if (eq.evalEq(postfixExpression,lower).toFixed(10) > 0) {
+            lower = middleIndex ;
+          }
+          else {
+            higher = middleIndex
+          }
+        }
+        else {
+          if (eq.evalEq(postfixExpression,lower).toFixed(10) > 0) {
+            higher = middleIndex ;
+          }
+
+          else {
+             lower = middleIndex ;
+          }
+        }     
+      } while ((middle.toFixed(10) != prevMiddle.toFixed(10))) ;
+      index++ ;
+      const table = document.getElementById("station") ;
+      let lastRow = table.insertRow(table.rows.length) ;
+      lastRow.insertCell(0) ;
+      lastRow.children[0].classList.add("cord") ;
+      lastRow.children[0].innerHTML = middleIndex.toFixed(10) ;
+
+      lastRow.insertCell(1) ;
+      lastRow.children[1].classList.add("cord") ;
+      lastRow.children[1].innerHTML =  eq.evalEq(postfixExpression,middleIndex).toFixed(10) ;
+    }
+    
+    //console.log(middle.toFixed(7)) ;
+    //lastRow.insertCell(eq.evalEq(postfixExpression,middle).toFixed(7)) ;
+  }
   this.drawGraph = function(lineList) {
     this.axis()  ;
     lastXpoint = -canvas.width/2;
@@ -834,15 +896,17 @@ function graph (id) {
         for (let i = -canvas.width/2/scale; i <= canvas.width/2 ; i+=xIncrement/scale) {
             let y = currEq.evalEq(postfixExpression ,i/scale) ;
             //console.log("i/scale:" + i/scale)
-          if ((lastYpoint > 0 && y < 0) || (lastYpoint < 0 && y > 0) && lastXpoint != -canvas.width/2/scale) {
-            window.alert("root found") ;
-            window.alert(lastYpoint) ;
-            window.alert(y) ;
-            let temp = [lastXpoint - 2*(xIncrement/scale),lastXpoint - xIncrement/scale] ;
-            currLine.addInterval(temp) ;
-          }   
+            if ((lastYpoint > 0 && y < 0) || (lastYpoint < 0 && y > 0) && lastXpoint != -canvas.width/2/scale) {
+              //window.alert("root found") ;
+              //window.alert(lastYpoint) ;
+              //window.alert(y) ;
+              //window.alert(lastXpoint - 2*(xIncrement/scale)) ;
+              //window.alert(lastXpoint-(xIncrement/scale)) ;
+              let temp = [lastXpoint - 2*(xIncrement/scale),lastXpoint- xIncrement/scale] ;
+              currLine.addInterval(temp) ;
+            }   
           
-          if (i == -canvas.width/2/scale) { // makes sure first point is moved to but no line is drawn
+            if (i == -canvas.width/2/scale) { // makes sure first point is moved to but no line is drawn
               lastXpoint += xIncrement/scale ;
               lastYpoint = y*scale ;
               ctx.moveTo(lastXpoint ,lastYpoint) ;
@@ -850,85 +914,52 @@ function graph (id) {
             currLine.addPoint(y*scale) ;
             this.drawLineToPoint(y*scale) ;
         }
+        if (lines.getLine().getGraph() && currEq.graphValidation() && scale == 1) {
+          const table = document.getElementById("station") ;
+          table.getElementsByTagName("tbody")[0].innerHTML = table.rows[0].innerHTML;
+          this.displayPoints(postfixExpression) ;  // delelting all rows except the first one
+          
+         
+          let lastRow = table.insertRow(table.rows.length) ;
+          lastRow.insertCell(0) ;
+          lastRow.children[0].classList.add("cord") ;
+          lastRow.children[0].innerHTML = "0" ;
+
+          lastRow.insertCell(1) ;
+          lastRow.children[1].classList.add("cord") ;
+          lastRow.children[1].innerHTML = currEq.evalEq(postfixExpression,0);
+        }  
       }
-      if (currLine.getGradientGraph()) {
+      if (currLine.getGradientGraph() && currEq.graphValidation()) {
         //window.alert("GRAIDENT") ;
+        currLine.clearIntervals() ;
         ctx.globalAlpha = 0.5 ;
         lastXpoint = -canvas.width/2/scale ;
         lastYpoint = 0 ;
-        let xPoints = currLine.getPoints() ;
         //window.alert(xPoints.length) ;
         for (let i = -canvas.width/2/scale; i <= canvas.width/2 ; i+=xIncrement/scale) {
-          let newY = (currEq.evalEq(postfixExpression ,i/scale+xIncrement/scale)- currEq.evalEq(postfixExpression ,i/scale))/(xIncrement/scale);
-          //
+           let newY = (currEq.evalEq(postfixExpression ,i/scale+xIncrement/scale)- currEq.evalEq(postfixExpression ,i/scale))/(xIncrement/scale);
+          if ((lastYpoint > 0 && newY < 0) || (lastYpoint < 0 && newY > 0) && lastXpoint != -canvas.width/2/scale) {
+            //window.alert("root found") ;
+            //window.alert(lastYpoint) ;
+            //window.alert(y) ;
+            //window.alert(lastXpoint - 2*(xIncrement/scale)) ;
+            //window.alert(lastXpoint-(xIncrement/scale)) ;
+            let temp = [lastXpoint - 2*(xIncrement/scale),lastXpoint- xIncrement/scale] ;
+            currLine.addInterval(temp) ;
+          }   
           this.drawLineToPoint(newY*scale) ;
         } 
       ctx.globalAlpha = 1 ;  
       }
+    if (lines.getLine().getGradientGraph() && currEq.graphValidation() && scale == 1) {
+      this.displayPoints(postfixExpression) ; 
+    }  
     currLineIndex++ ;
     }
-    if (lineList.getLine().getGraph()) {
-      var selectedLine = lineList.getLine() ;
-      var eq = selectedLine.getEquation() ;
-      var intervals = selectedLine.getIntervals() ;
-      var index  = 0 ;
-      var lower  = intervals[index][0]  ;
-      var higher = intervals[index][1] ;
-       var prevMiddle = 0 ;
-      var middle = 0 ;
-      //window.alert(lower) ;
-      //window.alert(higher) ;
-      window.alert(intervals.length)
-      while (index <= intervals.length - 1) {
-        lower  = intervals[index][0] ;
-        higher = intervals[index][1] ;
-        
-        do {
-          let middleIndex  = (lower+higher)/2 ;
-          prevMiddle = middle ;
-          var middle = eq.evalEq(postfixExpression, middleIndex) ;
-          window.alert("midddle" + lower) ;
-          window.alert(" prevMiddle" + higher) ;
-          //window.alert("midddle" + middle.toFixed(6)) ;
-          //window.alert(" prevMiddle" + prevMiddle.toFixed(6)) ;
-          if (middle > 0) {
-            if (eq.evalEq(postfixExpression,lower).toFixed(7) > 0) {
-              lower = middle ;
-            }
-            else {
-              higher = middle
-            }
-          }
-          else {
-            if (eq.evalEq(postfixExpression,lower).toFixed(7) > 0) {
-              higher = middle ;
-            }
-            else {
-               lower = middle ;
-            }
-          }     
-        } while ((middle.toFixed(7) != prevMiddle.toFixed(7))) ;
-        index++ ;
-      }
-      //console.log(middle.toFixed(7)) ;
-      const table = document.getElementById("station") ;
-      let lastRow = table.insertRow(table.rows.length) ;
-      lastRow.insertCell(0) ;
-      lastRow.children[0].classList.add("cord") ;
-      lastRow.children[0].innerHTML = middle.toFixed(7) ;
-
-      lastRow.insertCell(1) ;
-      lastRow.children[1].classList.add("cord") ;
-      lastRow.children[1].innerHTML = eq.evalEq(postfixExpression,middle).toFixed(7) ;
-
-
-
-      //lastRow.insertCell(eq.evalEq(postfixExpression,middle).toFixed(7)) ;
-    } 
+  
   } 
     
-    
-  
   this.getIncrement = function() {
     return xIncrement ;
   }
