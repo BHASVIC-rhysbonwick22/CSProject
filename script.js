@@ -718,7 +718,7 @@ function graph (id) {
   var lastYpoint = 0 ;// change to negative height
   var canvas = document.getElementById(id) ;
   var ctx = canvas.getContext("2d") ;
-  var xIncrement = 0.01 ;// subject to change
+  var xIncrement = 1 ;// subject to change
   var minZoom = 10 * xIncrement ;// subject to change
   var maxZoom = 1000000 ;// subject to change
   var scale = 1 ;
@@ -896,7 +896,7 @@ function graph (id) {
         for (let i = -canvas.width/2/scale; i <= canvas.width/2 ; i+=xIncrement/scale) {
             let y = currEq.evalEq(postfixExpression ,i/scale) ;
             //console.log("i/scale:" + i/scale)
-            if ((lastYpoint > 0 && y < 0) || (lastYpoint < 0 && y > 0) && lastXpoint != -canvas.width/2/scale) {
+            if ((scale == 1 && ((lastYpoint > 0 && y < 0) || (lastYpoint < 0 && y > 0) && lastXpoint != -canvas.width/2/scale))) {
               //window.alert("root found") ;
               //window.alert(lastYpoint) ;
               //window.alert(y) ;
@@ -914,10 +914,10 @@ function graph (id) {
             currLine.addPoint(y*scale) ;
             this.drawLineToPoint(y*scale) ;
         }
-        if (lines.getLine().getGraph() && currEq.graphValidation() && scale == 1) {
+        if (scale == 1 && lines.getLine().getGraph() && currEq.graphValidation() ) {
           const table = document.getElementById("station") ;
-          table.getElementsByTagName("tbody")[0].innerHTML = table.rows[0].innerHTML;
-          this.displayPoints(postfixExpression) ;  // delelting all rows except the first one
+          table.getElementsByTagName("tbody")[0].innerHTML = table.rows[0].innerHTML; // delelting all rows except the first one
+          this.displayPoints(postfixExpression) ;  
           
          
           let lastRow = table.insertRow(table.rows.length) ;
@@ -1094,7 +1094,7 @@ function backspace(e) {
   // if we reverse both the substring and the orginal string the String.replace() method will remove the last occurrence of that substring in the orignal string if we then reverse the orignal string after
   temp = display.split("").reverse().join("") ;// reversed string
   popped = popped.split("").reverse().join("") ; // reversed substring
-  temp = temp.replace(popped, "") // Rempove reversed string from reversed display
+  temp = temp.replace(popped, "") // Remove reversed string from reversed display
   let newDisplay = temp.split("").reverse().join("") ; // changing back string to original way round
   //console.log(newDisplay) ;
   e.target.parentElement.parentElement.children[1].innerHTML= newDisplay ;
@@ -1248,16 +1248,41 @@ function jsOnload () {
   canvasGraph.setHeight(3000) ;
   canvasGraph.setWidth(3000) ;
   canvasGraph.axis() ;
-  //canvasGraph.setColour("#FF7766") ;
-  //canvasGraph.drawLineToPoint(200) ;
-  //canvasGraph.drawLineToPoint(-1000) ;
-  //canvasGraph.drawLineToPoint(200) ;
   lines.setLine(0) ; // needs to be here because it edits all elements that display the current Line
-
+  const tableCalcBtn = document.getElementById("tableCalc") ;
+  tableCalcBtn.addEventListener("click" ,(e) => {
+    let currLine = lines.getLine() ;
+    let currEq = currLine.getEquation() ;
+    let start = parseInt(document.getElementById("tableStart").value) ;
+    let end = parseInt(document.getElementById("tableEnd").value) ;
+    let step = parseInt(document.getElementById("tableStep").value) ;
+    if (!(currEq.graphValidation())) {
+      window.alert("Currently selected Line is invalid, please make the line vlaid or selet a different line") ;
+    }
+    else if (end <= start) {
+      window.alert("the end value must be greater than the start value")
+    }
+    
+    //let lastRow = table.insertRow(table.rows.length) ;
+      //lastRow.insertCell(0) ;
+      //lastRow.children[0].classList.add("cord") ;
+      //lastRow.children[0].innerHTML = middleIndex.toFixed(10) ;
+    else { //valid use of the table function
+      const table = e.target.parentElement.parentElement.parentElement
+      console.log(table) ;
+      let postfix = currEq.convInfixToPostfix() ;
+      let currX = start ;
+      let newY = 0 ;
+      while (currX <= end) {
+        newY = currEq.evalEq(postfix,currX) ;
+        table.rows[table.rows.length-2].insertCell(-1).innerHTML = currX ;
+        table.rows[table.rows.length-1].insertCell(-1).innerHTML = newY.toFixed(10) ;
+        currX += step ; 
+      }
+    }
+  }) ;
 }
 const lines = new lineList () ;
 const inputButtons = new inputButtonList() ;
 
-
-
-
+                                                                                                                                                                                                                                                                                                                                             

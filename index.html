@@ -39,20 +39,37 @@
     <table id = "station">
       <tr>
         <td> x </td>
-        <td> y</td>
+        <td> y </td>
       </tr>
     </table>
   </div>
+  <div id = "tableFunctionWrapper">
+    <table id ="tableFunction" >
+      <tr>
+        <td><p class = "lineNumDisplay"> L1</p> </td>
+        <td> <input id = "tableStart" type = "number" , min = "-1500" , max = "1500"> start: </input> </td>
+        <td> <input id = "tableStep" type = "number" , min = "-1500" , max = "1500"> step: </input></td>
+        <td> <input id = "tableEnd" type = "number" , min = "-1500" , max = "1500"> end </input> </td>
+        <td> <input type = "button" id = "tableCalc"> calculate </input></td>
+      </tr>
+      <tr> 
+        <td> x </td>
+      </tr>
+      <tr> 
+        <td> y </td>
+      </tr>
+    </table>
+  </div>  
 
 
 <div id = "AllInputButtons">
-    <table class = "inputTable">
+  <table class = "inputTable">
       <tr> 
-        <td> <button type = "button" Class = "cycleButton" id = "unaryOperator"> unary operators  </td>
+        <td> <button type = "button" Class = "cycleButton" id = "unaryOperator"> unary operators </td>
         <td> <button type = "button" Class = "cycleButton" id = "operand" > operands/constants </td>
         <td> <button type = "button" Class = "cycleButton" id = "binaryOperator"> binary operators </td>
       </tr>
-    </table>
+  </table>
     <div id = "inputButtonWrapper"> 
       <table class = "inputTable" id = "unaryOperatorTable">
         <tr> 
