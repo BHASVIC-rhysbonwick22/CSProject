@@ -824,7 +824,7 @@ function graph (id) {
     var middle = 0 ;
     //window.alert(lower) ;
     //window.alert(higher) ;
-    window.alert(intervals.length) ;
+    //window.alert(intervals.length) ;
     while (index <= intervals.length - 1) {
       var lower  = intervals[index][0] ;
       var higher = intervals[index][1] ;
@@ -1214,7 +1214,7 @@ function jsOnload () {
     canvasGraph.setZoom(50) ;
     canvasGraph.drawLineToPoint(10) ;
   })  */ 
-  document.addEventListener("wheel" , (e) => {
+  document.getElementById("graph").addEventListener("wheel" , (e) => {
     let scale = 0 ;
     const deltaY = e.deltaY
     //console.log("Wheel event occurred")
