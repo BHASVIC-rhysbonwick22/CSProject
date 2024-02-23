@@ -182,7 +182,6 @@ function inputButtonList() {
 Object.assign(inputButtonOperator.prototype, new inputButtonPrototype()) ;
 Object.assign(inputButtonOperand.prototype, new inputButtonPrototype()) ;
 
-
 function memoryStack () {
   var size = 50 ;
   var stack = [] ;
@@ -548,7 +547,7 @@ function lineEquation () {
       equObj.innerHTML =  equObj.innerHTML + inputBtnObj.getDisplay() ;
       
       if ((inputBtnObj instanceof inputButtonOperator && inputBtnObj.getType() == "unary" && inpBtnId != "(" && inpBtnId != ")")) {
-        window.alert("bracket added") ;
+        //window.alert("bracket added") ;
         this.push("(") ;
         equObj.innerHTML =  equObj.innerHTML + "(" ;
       }    
@@ -718,7 +717,7 @@ function graph (id) {
   var lastYpoint = 0 ;// change to negative height
   var canvas = document.getElementById(id) ;
   var ctx = canvas.getContext("2d") ;
-  var xIncrement = 1 ;// subject to change
+  var xIncrement = 0.1 ;// subject to change
   var minZoom = 10 * xIncrement ;// subject to change
   var maxZoom = 1000000 ;// subject to change
   var scale = 1 ;
@@ -1046,7 +1045,7 @@ function backspace(e) {
   //console.log(display) ;
   var buttonList =  new inputButtonList() ;
   var popped = line.getEquation().pop() ; // stack updated
-  window.alert("popped" + popped) ;
+  //window.alert("popped" + popped) ;
   poppedList = popped.split("") ;
   if (popped == "underflow") {
     window.alert("equation is empty") ;
@@ -1208,13 +1207,13 @@ function jsOnload () {
 
   
   const canvasGraph = new graph("graph") ;
-
-  document.getElementById("graph").addEventListener("click" , () => { 
+  // testing component, not needed anymore
+  /*document.getElementById("graph").addEventListener("click" , () => { 
     //console.log("scaled") ;
     canvasGraph.axis() ;
     canvasGraph.setZoom(50) ;
     canvasGraph.drawLineToPoint(10) ;
-  }) ;
+  })  */ 
   document.addEventListener("wheel" , (e) => {
     let scale = 0 ;
     const deltaY = e.deltaY
@@ -1249,6 +1248,8 @@ function jsOnload () {
   canvasGraph.setWidth(3000) ;
   canvasGraph.axis() ;
   lines.setLine(0) ; // needs to be here because it edits all elements that display the current Line
+
+  
   const tableCalcBtn = document.getElementById("tableCalc") ;
   tableCalcBtn.addEventListener("click" ,(e) => {
     let currLine = lines.getLine() ;
@@ -1262,6 +1263,12 @@ function jsOnload () {
     else if (end <= start) {
       window.alert("the end value must be greater than the start value")
     }
+    else if (step <= 0) {
+      window.alert("step must be a positive value") ;
+    }
+    else if ((end - start)/step > 500) {
+      window.alert("a maximum of 500 values can be calculated into the table at one time")
+    }
     
     //let lastRow = table.insertRow(table.rows.length) ;
       //lastRow.insertCell(0) ;
@@ -1269,7 +1276,11 @@ function jsOnload () {
       //lastRow.children[0].innerHTML = middleIndex.toFixed(10) ;
     else { //valid use of the table function
       const table = e.target.parentElement.parentElement.parentElement
-      console.log(table) ;
+      //console.log(table.rows[table.rows.length - 1]) ;
+      while (table.rows[table.rows.length - 1].getElementsByTagName("td").length > 1) {
+        table.rows[table.rows.length - 1].deleteCell(-1) ;
+        table.rows[table.rows.length - 2].deleteCell(-1) ;
+      }
       let postfix = currEq.convInfixToPostfix() ;
       let currX = start ;
       let newY = 0 ;
@@ -1281,7 +1292,57 @@ function jsOnload () {
       }
     }
   }) ;
-}
+  const integralCalcBtn = document.getElementById("tableIntegralCalc") ;
+  integralCalcBtn.addEventListener("click" ,(e) => {
+    let currLine = lines.getLine() ;
+    let currEq = currLine.getEquation() ;
+    let start = parseInt(document.getElementById("tableIntegralStart").value) ;
+    let end = parseInt(document.getElementById("tableIntegralEnd").value) ;
+    const dp = 3 ;
+    var step = (end-start)/50000 ;
+    //window.alert("step" + step) ;
+    if (!(currEq.graphValidation())) {
+      window.alert("Currently selected Line is invalid, please make the line vlaid or selet a different line") ;
+    }
+    else if (end <= start) {
+      window.alert("the end value must be greater than the start value")
+    }
+    else if (step <= 0) {
+      window.alert("step must be a positive value") ;
+    }
+    else if (step.toFixed(dp-1) == 0) {
+      window.alert("interval is too small") ;
+    }
+
+    else { 
+      var postfix = currEq.convInfixToPostfix() ;
+      var count = 1 ;
+      var area = currEq.evalEq(postfix,start) + currEq.evalEq(postfix,end) ;
+      var currX  = start ;
+      while (currX  != end) {
+        currX = (currX+step) ;
+        //window.alert(typeof(currX)) ;
+        currX =  Number(currX.toFixed(dp)) ; 
+        //window.alert(currX) ;
+        area += 2 * currEq.evalEq(postfix,currX) ;
+        count++ ; // counts number of strips 
+      }
+      const h = (end - start)/count ;
+      area = 0.5 * h * area ;
+      document.getElementById("area").innerHTML = "area (5dp) =" + area.toFixed(5) ;
+    }
+  }) ;
+  document.getElementById("tips").addEventListener("click" , (e) => {
+    if (document.getElementById("instructWrapper").style.display != "inline"){
+      document.getElementById("instructWrapper").style.display = "inline" ;
+      document.getElementById("canvasWrapper").style.display = "none" ;
+    }
+    else {
+      document.getElementById("instructWrapper").style.display = "none" ;
+      document.getElementById("canvasWrapper").style.display = "inline" ;
+    }
+  }) ;
+}  
 const lines = new lineList () ;
 const inputButtons = new inputButtonList() ;
 
